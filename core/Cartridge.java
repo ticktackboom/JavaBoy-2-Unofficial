@@ -4,6 +4,7 @@ import java.applet.Applet;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Label;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -11,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -951,7 +953,7 @@ class WebSaveRAM implements Runnable {
 
 		conn.disconnect();
 
-		DataInputStream input = new DataInputStream(conn.getInputStream());
+		BufferedReader input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 		String str;
 		while (null != ((str = input.readLine()))) {
 			System.out.println(str);
@@ -997,7 +999,7 @@ class WebSaveRAM implements Runnable {
 
 		conn.disconnect();
 
-		DataInputStream input = new DataInputStream(conn.getInputStream());
+		BufferedReader input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 		String str;
 		str = input.readLine();
 
