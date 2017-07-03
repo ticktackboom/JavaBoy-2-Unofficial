@@ -111,9 +111,9 @@ class IoHandler {
 	}
 
 	public void performHdma() {
-		int dmaSrc = (JavaBoy.unsign(registers[0x51]) << 8) + (JavaBoy.unsign(registers[0x52]) & 0xF0);
-		int dmaDst = ((JavaBoy.unsign(registers[0x53]) & 0x1F) << 8) + (JavaBoy.unsign(registers[0x54]) & 0xF0)
-				+ 0x8000;
+		int dmaSrc = (StaticFunctions.unsign(registers[0x51]) << 8) + (StaticFunctions.unsign(registers[0x52]) & 0xF0);
+		int dmaDst = ((StaticFunctions.unsign(registers[0x53]) & 0x1F) << 8)
+				+ (StaticFunctions.unsign(registers[0x54]) & 0xF0) + 0x8000;
 
 		// System.out.println("Copied 16 bytes from " + JavaBoy.hexWord(dmaSrc) + " to "
 		// + JavaBoy.hexWord(dmaDst));
@@ -129,7 +129,7 @@ class IoHandler {
 		registers[0x53] = (byte) ((dmaDst & 0x1F00) >> 8);
 		registers[0x54] = (byte) (dmaDst & 0x00F0);
 
-		int len = JavaBoy.unsign(registers[0x55]);
+		int len = StaticFunctions.unsign(registers[0x55]);
 		if (len == 0x00) {
 			registers[0x55] = (byte) 0xFF;
 			hdmaRunning = false;
@@ -164,7 +164,7 @@ class IoHandler {
 			int cyclePos = dmgcpu.instrCount % dmgcpu.INSTRS_PER_HBLANK;
 			int sectionLength = dmgcpu.INSTRS_PER_HBLANK / 6;
 
-			if (JavaBoy.unsign(registers[0x44]) > 144) {
+			if (StaticFunctions.unsign(registers[0x44]) > 144) {
 				output |= 1;
 			} else {
 				if (cyclePos <= sectionLength * 3) {
@@ -192,7 +192,8 @@ class IoHandler {
 			if (dmgcpu.gbcFeatures) {
 				int palNumber = (registers[0x68] & 0x38) >> 3;
 				return dmgcpu.graphicsChip.gbcBackground[palNumber].getGbcColours(
-						(JavaBoy.unsign(registers[0x68]) & 0x06) >> 1, (JavaBoy.unsign(registers[0x68]) & 0x01) == 1);
+						(StaticFunctions.unsign(registers[0x68]) & 0x06) >> 1,
+						(StaticFunctions.unsign(registers[0x68]) & 0x01) == 1);
 			} else {
 				return registers[num];
 			}
@@ -202,7 +203,8 @@ class IoHandler {
 			if (dmgcpu.gbcFeatures) {
 				int palNumber = (registers[0x6A] & 0x38) >> 3;
 				return dmgcpu.graphicsChip.gbcSprite[palNumber].getGbcColours(
-						(JavaBoy.unsign(registers[0x6A]) & 0x06) >> 1, (JavaBoy.unsign(registers[0x6A]) & 0x01) == 1);
+						(StaticFunctions.unsign(registers[0x6A]) & 0x06) >> 1,
+						(StaticFunctions.unsign(registers[0x6A]) & 0x01) == 1);
 			} else {
 				return registers[num];
 			}
@@ -263,7 +265,7 @@ class IoHandler {
 			registers[0x02] = (byte) data;
 
 			if (dmgcpu.gameLink != null) { // Game Link is connected to serial port
-				if (((JavaBoy.unsign(data) & 0x81) == 0x81)) {
+				if (((StaticFunctions.unsign(data) & 0x81) == 0x81)) {
 					dmgcpu.gameLink.send(registers[0x01]);
 				}
 			} else {
@@ -279,10 +281,11 @@ class IoHandler {
 			/*
 			 * if (dmgcpu.gameLink == null) { // Simulate no gameboy present if
 			 * ((registers[0x02] & 0x01) == 1) { //System.out.println("Sent byte: " +
-			 * JavaBoy.hexByte(JavaBoy.unsign(registers[0x01]))); registers[0x01] = (byte)
-			 * 0xFF; // when no LAN connection dmgcpu.triggerInterrupt(dmgcpu.INT_SER);
-			 * registers[0x02] &= 0x7F; } } else if (((JavaBoy.unsign(data) & 0x81) == 0x81)
-			 * && (dmgcpu.gameLink != null)) { dmgcpu.gameLink.send(registers[0x01]); } //
+			 * JavaBoy.hexByte(StaticFunctions.unsign(registers[0x01]))); registers[0x01] =
+			 * (byte) 0xFF; // when no LAN connection
+			 * dmgcpu.triggerInterrupt(dmgcpu.INT_SER); registers[0x02] &= 0x7F; } } else if
+			 * (((StaticFunctions.unsign(data) & 0x81) == 0x81) && (dmgcpu.gameLink !=
+			 * null)) { dmgcpu.gameLink.send(registers[0x01]); } //
 			 * System.out.println(JavaBoy.hexWord(dmgcpu.pc));
 			 */
 			break;
@@ -319,23 +322,23 @@ class IoHandler {
 
 		case 0x10: // Sound channel 1, sweep
 			if (soundOn)
-				dmgcpu.soundChip.channel1.setSweep((JavaBoy.unsign(data) & 0x70) >> 4, (JavaBoy.unsign(data) & 0x07),
-						(JavaBoy.unsign(data) & 0x08) == 1);
+				dmgcpu.soundChip.channel1.setSweep((StaticFunctions.unsign(data) & 0x70) >> 4,
+						(StaticFunctions.unsign(data) & 0x07), (StaticFunctions.unsign(data) & 0x08) == 1);
 			registers[0x10] = (byte) data;
 			break;
 
 		case 0x11: // Sound channel 1, length and wave duty
 			if (soundOn) {
-				dmgcpu.soundChip.channel1.setDutyCycle((JavaBoy.unsign(data) & 0xC0) >> 6);
-				dmgcpu.soundChip.channel1.setLength(JavaBoy.unsign(data) & 0x3F);
+				dmgcpu.soundChip.channel1.setDutyCycle((StaticFunctions.unsign(data) & 0xC0) >> 6);
+				dmgcpu.soundChip.channel1.setLength(StaticFunctions.unsign(data) & 0x3F);
 			}
 			registers[0x11] = (byte) data;
 			break;
 
 		case 0x12: // Sound channel 1, volume envelope
 			if (soundOn) {
-				dmgcpu.soundChip.channel1.setEnvelope((JavaBoy.unsign(data) & 0xF0) >> 4, (JavaBoy.unsign(data) & 0x07),
-						(JavaBoy.unsign(data) & 0x08) == 8);
+				dmgcpu.soundChip.channel1.setEnvelope((StaticFunctions.unsign(data) & 0xF0) >> 4,
+						(StaticFunctions.unsign(data) & 0x07), (StaticFunctions.unsign(data) & 0x08) == 8);
 			}
 			registers[0x12] = (byte) data;
 			break;
@@ -343,8 +346,8 @@ class IoHandler {
 		case 0x13: // Sound channel 1, frequency low
 			registers[0x13] = (byte) data;
 			if (soundOn) {
-				dmgcpu.soundChip.channel1.setFrequency(
-						((int) (JavaBoy.unsign(registers[0x14]) & 0x07) << 8) + JavaBoy.unsign(registers[0x13]));
+				dmgcpu.soundChip.channel1.setFrequency(((int) (StaticFunctions.unsign(registers[0x14]) & 0x07) << 8)
+						+ StaticFunctions.unsign(registers[0x13]));
 			}
 			break;
 
@@ -353,23 +356,24 @@ class IoHandler {
 
 			if (soundOn) {
 				if ((registers[0x14] & 0x80) != 0) {
-					dmgcpu.soundChip.channel1.setLength(JavaBoy.unsign(registers[0x11]) & 0x3F);
-					dmgcpu.soundChip.channel1.setEnvelope((JavaBoy.unsign(registers[0x12]) & 0xF0) >> 4,
-							(JavaBoy.unsign(registers[0x12]) & 0x07), (JavaBoy.unsign(registers[0x12]) & 0x08) == 8);
+					dmgcpu.soundChip.channel1.setLength(StaticFunctions.unsign(registers[0x11]) & 0x3F);
+					dmgcpu.soundChip.channel1.setEnvelope((StaticFunctions.unsign(registers[0x12]) & 0xF0) >> 4,
+							(StaticFunctions.unsign(registers[0x12]) & 0x07),
+							(StaticFunctions.unsign(registers[0x12]) & 0x08) == 8);
 				}
 				if ((registers[0x14] & 0x40) == 0) {
 					dmgcpu.soundChip.channel1.setLength(-1);
 				}
 
-				dmgcpu.soundChip.channel1.setFrequency(
-						((int) (JavaBoy.unsign(registers[0x14]) & 0x07) << 8) + JavaBoy.unsign(registers[0x13]));
+				dmgcpu.soundChip.channel1.setFrequency(((int) (StaticFunctions.unsign(registers[0x14]) & 0x07) << 8)
+						+ StaticFunctions.unsign(registers[0x13]));
 			}
 			break;
 
 		case 0x17: // Sound channel 2, volume envelope
 			if (soundOn) {
-				dmgcpu.soundChip.channel2.setEnvelope((JavaBoy.unsign(data) & 0xF0) >> 4, (JavaBoy.unsign(data) & 0x07),
-						(JavaBoy.unsign(data) & 0x08) == 8);
+				dmgcpu.soundChip.channel2.setEnvelope((StaticFunctions.unsign(data) & 0xF0) >> 4,
+						(StaticFunctions.unsign(data) & 0x07), (StaticFunctions.unsign(data) & 0x08) == 8);
 			}
 			registers[0x17] = (byte) data;
 			break;
@@ -377,8 +381,8 @@ class IoHandler {
 		case 0x18: // Sound channel 2, frequency low
 			registers[0x18] = (byte) data;
 			if (soundOn) {
-				dmgcpu.soundChip.channel2.setFrequency(
-						((int) (JavaBoy.unsign(registers[0x19]) & 0x07) << 8) + JavaBoy.unsign(registers[0x18]));
+				dmgcpu.soundChip.channel2.setFrequency(((int) (StaticFunctions.unsign(registers[0x19]) & 0x07) << 8)
+						+ StaticFunctions.unsign(registers[0x18]));
 			}
 			break;
 
@@ -387,30 +391,31 @@ class IoHandler {
 
 			if (soundOn) {
 				if ((registers[0x19] & 0x80) != 0) {
-					dmgcpu.soundChip.channel2.setLength(JavaBoy.unsign(registers[0x21]) & 0x3F);
-					dmgcpu.soundChip.channel2.setEnvelope((JavaBoy.unsign(registers[0x17]) & 0xF0) >> 4,
-							(JavaBoy.unsign(registers[0x17]) & 0x07), (JavaBoy.unsign(registers[0x17]) & 0x08) == 8);
+					dmgcpu.soundChip.channel2.setLength(StaticFunctions.unsign(registers[0x21]) & 0x3F);
+					dmgcpu.soundChip.channel2.setEnvelope((StaticFunctions.unsign(registers[0x17]) & 0xF0) >> 4,
+							(StaticFunctions.unsign(registers[0x17]) & 0x07),
+							(StaticFunctions.unsign(registers[0x17]) & 0x08) == 8);
 				}
 				if ((registers[0x19] & 0x40) == 0) {
 					dmgcpu.soundChip.channel2.setLength(-1);
 				}
-				dmgcpu.soundChip.channel2.setFrequency(
-						((int) (JavaBoy.unsign(registers[0x19]) & 0x07) << 8) + JavaBoy.unsign(registers[0x18]));
+				dmgcpu.soundChip.channel2.setFrequency(((int) (StaticFunctions.unsign(registers[0x19]) & 0x07) << 8)
+						+ StaticFunctions.unsign(registers[0x18]));
 			}
 			break;
 
 		case 0x16: // Sound channel 2, length and wave duty
 			if (soundOn) {
-				dmgcpu.soundChip.channel2.setDutyCycle((JavaBoy.unsign(data) & 0xC0) >> 6);
-				dmgcpu.soundChip.channel2.setLength(JavaBoy.unsign(data) & 0x3F);
+				dmgcpu.soundChip.channel2.setDutyCycle((StaticFunctions.unsign(data) & 0xC0) >> 6);
+				dmgcpu.soundChip.channel2.setLength(StaticFunctions.unsign(data) & 0x3F);
 			}
 			registers[0x16] = (byte) data;
 			break;
 
 		case 0x1A: // Sound channel 3, on/off
 			if (soundOn) {
-				if ((JavaBoy.unsign(data) & 0x80) != 0) {
-					dmgcpu.soundChip.channel3.setVolume((JavaBoy.unsign(registers[0x1C]) & 0x60) >> 5);
+				if ((StaticFunctions.unsign(data) & 0x80) != 0) {
+					dmgcpu.soundChip.channel3.setVolume((StaticFunctions.unsign(registers[0x1C]) & 0x60) >> 5);
 				} else {
 					dmgcpu.soundChip.channel3.setVolume(0);
 				}
@@ -423,50 +428,50 @@ class IoHandler {
 			// System.out.println("D:" + data);
 			registers[0x1B] = (byte) data;
 			if (soundOn)
-				dmgcpu.soundChip.channel3.setLength(JavaBoy.unsign(data));
+				dmgcpu.soundChip.channel3.setLength(StaticFunctions.unsign(data));
 			break;
 
 		case 0x1C: // Sound channel 3, volume
 			registers[0x1C] = (byte) data;
 			if (soundOn)
-				dmgcpu.soundChip.channel3.setVolume((JavaBoy.unsign(registers[0x1C]) & 0x60) >> 5);
+				dmgcpu.soundChip.channel3.setVolume((StaticFunctions.unsign(registers[0x1C]) & 0x60) >> 5);
 			break;
 
 		case 0x1D: // Sound channel 3, frequency lower 8-bit
 			registers[0x1D] = (byte) data;
 			if (soundOn)
-				dmgcpu.soundChip.channel3.setFrequency(
-						((int) (JavaBoy.unsign(registers[0x1E]) & 0x07) << 8) + JavaBoy.unsign(registers[0x1D]));
+				dmgcpu.soundChip.channel3.setFrequency(((int) (StaticFunctions.unsign(registers[0x1E]) & 0x07) << 8)
+						+ StaticFunctions.unsign(registers[0x1D]));
 			break;
 
 		case 0x1E: // Sound channel 3, frequency higher 3-bit
 			registers[0x1E] = (byte) data;
 			if (soundOn) {
 				if ((registers[0x19] & 0x80) != 0) {
-					dmgcpu.soundChip.channel3.setLength(JavaBoy.unsign(registers[0x1B]));
+					dmgcpu.soundChip.channel3.setLength(StaticFunctions.unsign(registers[0x1B]));
 				}
-				dmgcpu.soundChip.channel3.setFrequency(
-						((int) (JavaBoy.unsign(registers[0x1E]) & 0x07) << 8) + JavaBoy.unsign(registers[0x1D]));
+				dmgcpu.soundChip.channel3.setFrequency(((int) (StaticFunctions.unsign(registers[0x1E]) & 0x07) << 8)
+						+ StaticFunctions.unsign(registers[0x1D]));
 			}
 			break;
 
 		case 0x20: // Sound channel 4, length
 			if (soundOn)
-				dmgcpu.soundChip.channel4.setLength(JavaBoy.unsign(data) & 0x3F);
+				dmgcpu.soundChip.channel4.setLength(StaticFunctions.unsign(data) & 0x3F);
 			registers[0x20] = (byte) data;
 			break;
 
 		case 0x21: // Sound channel 4, volume envelope
 			if (soundOn)
-				dmgcpu.soundChip.channel4.setEnvelope((JavaBoy.unsign(data) & 0xF0) >> 4, (JavaBoy.unsign(data) & 0x07),
-						(JavaBoy.unsign(data) & 0x08) == 8);
+				dmgcpu.soundChip.channel4.setEnvelope((StaticFunctions.unsign(data) & 0xF0) >> 4,
+						(StaticFunctions.unsign(data) & 0x07), (StaticFunctions.unsign(data) & 0x08) == 8);
 			registers[0x21] = (byte) data;
 			break;
 
 		case 0x22: // Sound channel 4, polynomial parameters
 			if (soundOn)
-				dmgcpu.soundChip.channel4.setParameters((JavaBoy.unsign(data) & 0x07),
-						(JavaBoy.unsign(data) & 0x08) == 8, (JavaBoy.unsign(data) & 0xF0) >> 4);
+				dmgcpu.soundChip.channel4.setParameters((StaticFunctions.unsign(data) & 0x07),
+						(StaticFunctions.unsign(data) & 0x08) == 8, (StaticFunctions.unsign(data) & 0xF0) >> 4);
 			registers[0x22] = (byte) data;
 			break;
 
@@ -474,7 +479,7 @@ class IoHandler {
 			registers[0x23] = (byte) data;
 			if (soundOn) {
 				if ((registers[0x23] & 0x80) != 0) {
-					dmgcpu.soundChip.channel4.setLength(JavaBoy.unsign(registers[0x20]) & 0x3F);
+					dmgcpu.soundChip.channel4.setLength(StaticFunctions.unsign(registers[0x20]) & 0x3F);
 				}
 				if ((registers[0x23] & 0x40) == 0) {
 					dmgcpu.soundChip.channel4.setLength(-1);
@@ -489,28 +494,28 @@ class IoHandler {
 
 			if (soundOn) {
 				chanData = 0;
-				if ((JavaBoy.unsign(data) & 0x01) != 0) {
+				if ((StaticFunctions.unsign(data) & 0x01) != 0) {
 					chanData |= SquareWaveGenerator.CHAN_LEFT;
 				}
-				if ((JavaBoy.unsign(data) & 0x10) != 0) {
+				if ((StaticFunctions.unsign(data) & 0x10) != 0) {
 					chanData |= SquareWaveGenerator.CHAN_RIGHT;
 				}
 				dmgcpu.soundChip.channel1.setChannel(chanData);
 
 				chanData = 0;
-				if ((JavaBoy.unsign(data) & 0x02) != 0) {
+				if ((StaticFunctions.unsign(data) & 0x02) != 0) {
 					chanData |= SquareWaveGenerator.CHAN_LEFT;
 				}
-				if ((JavaBoy.unsign(data) & 0x20) != 0) {
+				if ((StaticFunctions.unsign(data) & 0x20) != 0) {
 					chanData |= SquareWaveGenerator.CHAN_RIGHT;
 				}
 				dmgcpu.soundChip.channel2.setChannel(chanData);
 
 				chanData = 0;
-				if ((JavaBoy.unsign(data) & 0x04) != 0) {
+				if ((StaticFunctions.unsign(data) & 0x04) != 0) {
 					chanData |= SquareWaveGenerator.CHAN_LEFT;
 				}
-				if ((JavaBoy.unsign(data) & 0x40) != 0) {
+				if ((StaticFunctions.unsign(data) & 0x40) != 0) {
 					chanData |= SquareWaveGenerator.CHAN_RIGHT;
 				}
 				dmgcpu.soundChip.channel3.setChannel(chanData);
@@ -535,7 +540,7 @@ class IoHandler {
 		case 0x3E:
 		case 0x3F:
 			if (soundOn)
-				dmgcpu.soundChip.channel3.setSamplePair(num - 0x30, JavaBoy.unsign(data));
+				dmgcpu.soundChip.channel3.setSamplePair(num - 0x30, StaticFunctions.unsign(data));
 			registers[num] = (byte) data;
 			break;
 
@@ -584,19 +589,22 @@ class IoHandler {
 
 		case 0x41:
 			// System.out.println("STAT set to " + data + " lcdc is " +
-			// JavaBoy.unsign(registers[0x44]) + " pc is " + JavaBoy.hexWord(dmgcpu.pc));
+			// StaticFunctions.unsign(registers[0x44]) + " pc is " +
+			// JavaBoy.hexWord(dmgcpu.pc));
 			registers[0x41] = (byte) data;
 			break;
 
 		case 0x42: // SCY
 			// System.out.println("SCY set to " + data + " lcdc is " +
-			// JavaBoy.unsign(registers[0x44]) + " pc is " + JavaBoy.hexWord(dmgcpu.pc));
+			// StaticFunctions.unsign(registers[0x44]) + " pc is " +
+			// JavaBoy.hexWord(dmgcpu.pc));
 			registers[0x42] = (byte) data;
 			break;
 
 		case 0x43: // SCX
 			// System.out.println("SCX set to " + data + " lcdc is " +
-			// JavaBoy.unsign(registers[0x44]) + " pc is " + JavaBoy.hexWord(dmgcpu.pc));
+			// StaticFunctions.unsign(registers[0x44]) + " pc is " +
+			// JavaBoy.hexWord(dmgcpu.pc));
 			registers[0x43] = (byte) data;
 			break;
 
@@ -645,10 +653,11 @@ class IoHandler {
 
 		case 0x55:
 			if ((!hdmaRunning) && ((registers[0x55] & 0x80) == 0) && ((data & 0x80) == 0)) {
-				int dmaSrc = (JavaBoy.unsign(registers[0x51]) << 8) + (JavaBoy.unsign(registers[0x52]) & 0xF0);
-				int dmaDst = ((JavaBoy.unsign(registers[0x53]) & 0x1F) << 8) + (JavaBoy.unsign(registers[0x54]) & 0xF0)
-						+ 0x8000;
-				int dmaLen = ((JavaBoy.unsign(data) & 0x7F) * 16) + 16;
+				int dmaSrc = (StaticFunctions.unsign(registers[0x51]) << 8)
+						+ (StaticFunctions.unsign(registers[0x52]) & 0xF0);
+				int dmaDst = ((StaticFunctions.unsign(registers[0x53]) & 0x1F) << 8)
+						+ (StaticFunctions.unsign(registers[0x54]) & 0xF0) + 0x8000;
+				int dmaLen = ((StaticFunctions.unsign(data) & 0x7F) * 16) + 16;
 
 				if (dmaLen > 2048)
 					dmaLen = 2048;
@@ -657,12 +666,12 @@ class IoHandler {
 					dmgcpu.addressWrite(dmaDst + r, dmgcpu.addressRead(dmaSrc + r));
 				}
 			} else {
-				if ((JavaBoy.unsign(data) & 0x80) == 0x80) {
+				if ((StaticFunctions.unsign(data) & 0x80) == 0x80) {
 					hdmaRunning = true;
 					// System.out.println("HDMA started");
 					registers[0x55] = (byte) (data & 0x7F);
 					break;
-				} else if ((hdmaRunning) && ((JavaBoy.unsign(data) & 0x80) == 0)) {
+				} else if ((hdmaRunning) && ((StaticFunctions.unsign(data) & 0x80) == 0)) {
 					hdmaRunning = false;
 					// System.out.println("HDMA stopped");
 				}
@@ -676,11 +685,11 @@ class IoHandler {
 			if (dmgcpu.gbcFeatures) {
 				int palNumber = (registers[0x68] & 0x38) >> 3;
 				dmgcpu.graphicsChip.gbcBackground[palNumber].setGbcColours(
-						(JavaBoy.unsign(registers[0x68]) & 0x06) >> 1, (JavaBoy.unsign(registers[0x68]) & 0x01) == 1,
-						JavaBoy.unsign(data));
+						(StaticFunctions.unsign(registers[0x68]) & 0x06) >> 1,
+						(StaticFunctions.unsign(registers[0x68]) & 0x01) == 1, StaticFunctions.unsign(data));
 				dmgcpu.graphicsChip.invalidateAll(palNumber * 4);
 
-				if ((JavaBoy.unsign(registers[0x68]) & 0x80) != 0) {
+				if ((StaticFunctions.unsign(registers[0x68]) & 0x80) != 0) {
 					registers[0x68]++;
 				}
 
@@ -694,11 +703,12 @@ class IoHandler {
 			if (dmgcpu.gbcFeatures) {
 				int palNumber = (registers[0x6A] & 0x38) >> 3;
 				// System.out.print("Pal " + palNumber + " ");
-				dmgcpu.graphicsChip.gbcSprite[palNumber].setGbcColours((JavaBoy.unsign(registers[0x6A]) & 0x06) >> 1,
-						(JavaBoy.unsign(registers[0x6A]) & 0x01) == 1, JavaBoy.unsign(data));
+				dmgcpu.graphicsChip.gbcSprite[palNumber].setGbcColours(
+						(StaticFunctions.unsign(registers[0x6A]) & 0x06) >> 1,
+						(StaticFunctions.unsign(registers[0x6A]) & 0x01) == 1, StaticFunctions.unsign(data));
 				dmgcpu.graphicsChip.invalidateAll((palNumber * 4) + 32);
 
-				if ((JavaBoy.unsign(registers[0x6A]) & 0x80) != 0) {
+				if ((StaticFunctions.unsign(registers[0x6A]) & 0x80) != 0) {
 					if ((registers[0x6A] & 0x3F) == 0x3F) {
 						registers[0x6A] = (byte) 0x80;
 					} else {

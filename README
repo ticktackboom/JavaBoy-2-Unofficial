@@ -1,4 +1,6 @@
-Unofficial port of the javaboy gameboy emulator.
-Includes better debugging features and a memory search feature.
-Also, it aims to fix some of the compatability issues with the
-original Javaboy.
+Proyecto personal en el que trataré de mejorar un poco
+el emulador de GameBoy "JavaBoy", exlusivamente en Java.
+
+Compatible con juegos de GameBoy y GameBoy Color.
+
+El proyecto original fue iniciado por Neil Millstone.

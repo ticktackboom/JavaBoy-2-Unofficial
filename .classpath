@@ -2,5 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path=""/>
+	<classpathentry kind="lib" path="ini4j-0.5.5-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

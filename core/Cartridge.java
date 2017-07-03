@@ -198,9 +198,10 @@ class Cartridge {
 			} while (total > 0);
 			is.close();
 
-			JavaBoy.debugLog("Loaded ROM '" + romFileName + "'.  " + numBanks + " banks, " + (numBanks * 16) + "Kb.  "
-					+ getNumRAMBanks() + " RAM banks.");
-			JavaBoy.debugLog("Type: " + cartTypeTable[cartType] + " (" + JavaBoy.hexByte(cartType) + ")");
+			StaticFunctions.debugLog("Loaded ROM '" + romFileName + "'.  " + numBanks + " banks, " + (numBanks * 16)
+					+ "Kb.  " + getNumRAMBanks() + " RAM banks.");
+			StaticFunctions
+					.debugLog("Type: " + cartTypeTable[cartType] + " (" + StaticFunctions.hexByte(cartType) + ")");
 
 			if (!verifyChecksum() && (a instanceof Frame)) {
 				System.err.println("Invalid Checksum\n");
@@ -437,10 +438,10 @@ class Cartridge {
 		case 9:
 			return "This ROM has no mapper.";
 		case 1 /* MBC1 */ :
-			return "MBC1: ROM bank " + JavaBoy.hexByte(currentBank) + " mapped to " + " 4000 - 7FFFF";
+			return "MBC1: ROM bank " + StaticFunctions.hexByte(currentBank) + " mapped to " + " 4000 - 7FFFF";
 		case 2 /* MBC1+RAM */ :
 		case 3 /* MBC1+RAM+BATTERY */ :
-			out = "MBC1: ROM bank " + JavaBoy.hexByte(currentBank) + " mapped to " + " 4000 - 7FFFF.  ";
+			out = "MBC1: ROM bank " + StaticFunctions.hexByte(currentBank) + " mapped to " + " 4000 - 7FFFF.  ";
 			if (mbc1LargeRamMode) {
 				out = out + "Cartridge is in 16MBit ROM/8KByte RAM Mode.";
 			} else {
@@ -449,17 +450,17 @@ class Cartridge {
 			return out;
 		case 5:
 		case 6:
-			return "MBC2: ROM bank " + JavaBoy.hexByte(currentBank) + " mapped to 4000 - 7FFF";
+			return "MBC2: ROM bank " + StaticFunctions.hexByte(currentBank) + " mapped to 4000 - 7FFF";
 
 		case 0x19:
 		case 0x1C:
-			return "MBC5: ROM bank " + JavaBoy.hexByte(currentBank) + " mapped to 4000 - 7FFF";
+			return "MBC5: ROM bank " + StaticFunctions.hexByte(currentBank) + " mapped to 4000 - 7FFF";
 
 		case 0x1A:
 		case 0x1B:
 		case 0x1D:
 		case 0x1E:
-			return "MBC5: ROM bank " + JavaBoy.hexByte(currentBank) + " mapped to 4000 - 7FFF";
+			return "MBC5: ROM bank " + StaticFunctions.hexByte(currentBank) + " mapped to 4000 - 7FFF";
 
 		}
 		return "Unknown mapper.";
@@ -486,7 +487,7 @@ class Cartridge {
 	/** Restore the saved mapper state */
 	public void restoreMapping() {
 		if (savedBank != -1) {
-			System.out.println("- ROM Mapping restored to bank " + JavaBoy.hexByte(savedBank));
+			System.out.println("- ROM Mapping restored to bank " + StaticFunctions.hexByte(savedBank));
 			addressWrite(0x2000, savedBank);
 			savedBank = -1;
 		}
@@ -784,12 +785,12 @@ class Cartridge {
 	}
 
 	public boolean verifyChecksum() {
-		int checkSum = (JavaBoy.unsign(rom[0x14E]) << 8) + JavaBoy.unsign(rom[0x14F]);
+		int checkSum = (StaticFunctions.unsign(rom[0x14E]) << 8) + StaticFunctions.unsign(rom[0x14F]);
 
 		int total = 0; // Calculate ROM checksum
 		for (int r = 0; r < rom.length; r++) {
 			if ((r != 0x14E) && (r != 0x14F)) {
-				total = (total + JavaBoy.unsign(rom[r])) & 0x0000FFFF;
+				total = (total + StaticFunctions.unsign(rom[r])) & 0x0000FFFF;
 			}
 		}
 
@@ -812,7 +813,7 @@ class Cartridge {
 		cartName = new String(rom, 0x0134, 16);
 		// Extract the game name from the cartridge header
 
-		// JavaBoy.debugLog(rom[0x14F]+ " "+ rom[0x14E]);
+		// StaticFunctions.debugLog(rom[0x14F]+ " "+ rom[0x14E]);
 
 		checksumOk = verifyChecksum();
 
@@ -834,7 +835,7 @@ class Cartridge {
 			infoString = infoString + "Checksum invalid!";
 		}
 
-		JavaBoy.debugLog(infoString);
+		StaticFunctions.debugLog(infoString);
 	}
 
 	/**
@@ -961,7 +962,7 @@ class WebSaveRAM implements Runnable {
 		byte[] ram = cart.getBatteryRam();
 
 		for (int r = 0; r < cart.getBatteryRamSize(); r++) {
-			saveData.append(JavaBoy.hexByte(JavaBoy.unsign(ram[r])));
+			saveData.append(StaticFunctions.hexByte(StaticFunctions.unsign(ram[r])));
 		}
 		// saveData = URLEncoder.encode("Hel\0lo");
 

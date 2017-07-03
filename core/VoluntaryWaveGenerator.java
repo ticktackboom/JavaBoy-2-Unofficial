@@ -113,7 +113,7 @@ class VoluntaryWaveGenerator {
 			for (int r = offset; r < offset + length; r++) {
 
 				int samplePos = (31 * cyclePos) / cycleLength;
-				val = JavaBoy.unsign(waveform[samplePos % 32]) >> volumeShift << 1;
+				val = StaticFunctions.unsign(waveform[samplePos % 32]) >> volumeShift << 1;
 				// System.out.print(" " + val);
 
 				if ((channel & CHAN_LEFT) != 0)

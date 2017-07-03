@@ -191,14 +191,14 @@ class Dmgcpu {
 
 		/*
 		 * if ((addr >= 0xDFD8) && (addr <= 0xDFF0) && (running)) {
-		 * System.out.println(JavaBoy.hexWord(addr) + " read at " + JavaBoy.hexWord(pc)
-		 * + " bank " + cartridge.currentBank); }
+		 * System.out.println(StaticFunctions.hexWord(addr) + " read at " +
+		 * StaticFunctions.hexWord(pc) + " bank " + cartridge.currentBank); }
 		 */
 
 		/*
 		 * if ((addr < 0) || (addr > 65535)) {
 		 * System.out.println("Tried to read address " + addr + ".  pc = " +
-		 * JavaBoy.hexWord(pc)); return 0xFF; }
+		 * StaticFunctions.hexWord(pc)); return 0xFF; }
 		 */
 
 		addr = addr & 0xFFFF;
@@ -242,7 +242,7 @@ class Dmgcpu {
 			}
 
 		default:
-			System.out.println("Tried to read address " + addr + ".  pc = " + JavaBoy.hexWord(pc));
+			System.out.println("Tried to read address " + addr + ".  pc = " + StaticFunctions.hexWord(pc));
 			return 0xFF;
 		}
 
@@ -256,17 +256,18 @@ class Dmgcpu {
 
 		/*
 		 * if ((addr >= 0xCFF8) && (addr <= 0xCFF8) && (running)) {
-		 * System.out.println(JavaBoy.hexWord(data) + " written to " +
-		 * JavaBoy.hexWord(addr) + " at " + JavaBoy.hexWord(pc) + " bank " +
-		 * cartridge.currentBank); } if ((addr >= 0xEFF8) && (addr <= 0xEFF8) &&
-		 * (running)) { System.out.println(JavaBoy.hexWord(data) + " written to " +
-		 * JavaBoy.hexWord(addr) + " at " + JavaBoy.hexWord(pc) + " bank " +
-		 * cartridge.currentBank); }
+		 * System.out.println(StaticFunctions.hexWord(data) + " written to " +
+		 * StaticFunctions.hexWord(addr) + " at " + StaticFunctions.hexWord(pc) +
+		 * " bank " + cartridge.currentBank); } if ((addr >= 0xEFF8) && (addr <= 0xEFF8)
+		 * && (running)) { System.out.println(StaticFunctions.hexWord(data) +
+		 * " written to " + StaticFunctions.hexWord(addr) + " at " +
+		 * StaticFunctions.hexWord(pc) + " bank " + cartridge.currentBank); }
 		 */
 
 		/*
-		 * if ((addr < 0) || (addr > 65535)) { System.out.println(JavaBoy.hexWord(data)
-		 * + " written to " + JavaBoy.hexWord(addr) + " at " + JavaBoy.hexWord(pc) +
+		 * if ((addr < 0) || (addr > 65535)) {
+		 * System.out.println(StaticFunctions.hexWord(data) + " written to " +
+		 * StaticFunctions.hexWord(addr) + " at " + StaticFunctions.hexWord(pc) +
 		 * " bank " + cartridge.currentBank); }
 		 */
 
@@ -283,8 +284,9 @@ class Dmgcpu {
 				cartridge.debuggerAddressWrite(addr, data);
 			} else {
 				cartridge.addressWrite(addr, data);
-				// System.out.println("Tried to write to ROM! PC = " + JavaBoy.hexWord(pc) + ",
-				// Data = " + JavaBoy.hexByte(JavaBoy.unsign((byte) data)));
+				// System.out.println("Tried to write to ROM! PC = " +
+				// StaticFunctions.hexWord(pc) + ",
+				// Data = " + StaticFunctions.hexByte(StaticFunctions.unsign((byte) data)));
 			}
 			break;
 
@@ -315,7 +317,7 @@ class Dmgcpu {
 				try {
 					mainRam[addr - 0xE000] = (byte) data;
 				} catch (ArrayIndexOutOfBoundsException e) {
-					System.out.println("Address error: " + addr + " pc = " + JavaBoy.hexWord(pc));
+					System.out.println("Address error: " + addr + " pc = " + StaticFunctions.hexWord(pc));
 				}
 			} else if (addr < 0xFF00) {
 				oam[addr - 0xFE00] = (byte) data;
@@ -331,19 +333,21 @@ class Dmgcpu {
 
 		/*
 		 * if ((addr >= 0xFFA4) && (addr <= 0xFFA5) && (running)) {
-		 * System.out.println(JavaBoy.hexWord(addr) + " written at " +
-		 * JavaBoy.hexWord(pc) + " bank " + cartridge.currentBank); }
+		 * System.out.println(StaticFunctions.hexWord(addr) + " written at " +
+		 * StaticFunctions.hexWord(pc) + " bank " + cartridge.currentBank); }
 		 */
 
-		// System.out.print(JavaBoy.hexByte(JavaBoy.unsign((short) data)) + " --> " +
-		// JavaBoy.hexWord(addr) + ", ");
+		// System.out.print(StaticFunctions.hexByte(StaticFunctions.unsign((short)
+		// data)) + " --> " +
+		// StaticFunctions.hexWord(addr) + ", ");
 		if ((addr < 0x8000)) {
 			if (!running) {
 				cartridge.debuggerAddressWrite(addr, data);
 			} else {
 				cartridge.addressWrite(addr, data);
-				// System.out.println("Tried to write to ROM! PC = " + JavaBoy.hexWord(pc) + ",
-				// Data = " + JavaBoy.hexByte(JavaBoy.unsign((byte) data)));
+				// System.out.println("Tried to write to ROM! PC = " +
+				// StaticFunctions.hexWord(pc) + ",
+				// Data = " + StaticFunctions.hexByte(StaticFunctions.unsign((byte) data)));
 			}
 		} else if (addr < 0xA000) {
 			try {
@@ -353,8 +357,9 @@ class Dmgcpu {
 			}
 		} else if (addr < 0xC000) {
 			// RAM Bank write
-			// System.out.println("RAM bank write! + " + JavaBoy.hexWord(addr) + " = " +
-			// JavaBoy.hexByte(data) + " at " + JavaBoy.hexWord(pc));
+			// System.out.println("RAM bank write! + " + StaticFunctions.hexWord(addr) + " =
+			// " +
+			// StaticFunctions.hexByte(data) + " at " + StaticFunctions.hexWord(pc));
 			cartridge.addressWrite(addr, data);
 		} else if (addr < 0xE000) {
 			mainRam[addr - 0xC000] = (byte) data;
@@ -364,13 +369,14 @@ class Dmgcpu {
 			oam[addr - 0xFE00] = (byte) data;
 		} else if (addr <= 0xFFFF) {
 			if (addr == 0xFF80) {
-				// System.out.println("Register write: " + JavaBoy.hexWord(addr) + " = " +
-				// JavaBoy.hexWord(data));
+				// System.out.println("Register write: " + StaticFunctions.hexWord(addr) + " = "
+				// +
+				// StaticFunctions.hexWord(data));
 			}
 			ioHandler.ioWrite(addr - 0xFF00, (short) data);
 			// registers[addr - 0xFF00] = (byte) data;
 		} else {
-			System.out.println("Attempt to write to address " + JavaBoy.hexWord(addr));
+			System.out.println("Attempt to write to address " + StaticFunctions.hexWord(addr));
 		}
 	}
 
@@ -440,7 +446,7 @@ class Dmgcpu {
 		case 5:
 			return (short) (hl & 0x00FF);
 		case 6:
-			return JavaBoy.unsign(addressRead(hl));
+			return StaticFunctions.unsign(addressRead(hl));
 		case 7:
 			return a;
 		default:
@@ -516,7 +522,7 @@ class Dmgcpu {
 		setBC(0x0013);
 		setDE(0x00D8);
 		setHL(0x014D);
-		JavaBoy.debugLog("CPU reset");
+		StaticFunctions.debugLog("CPU reset");
 
 		ioHandler.reset();
 		// pc = 0x0100;
@@ -589,7 +595,7 @@ class Dmgcpu {
 	/** Check for interrupts that need to be initiated */
 	public final void initiateInterrupts() {
 		if (timaEnabled && ((instrCount % instrsPerTima) == 0)) {
-			if (JavaBoy.unsign(ioHandler.registers[05]) == 0) {
+			if (StaticFunctions.unsign(ioHandler.registers[05]) == 0) {
 				ioHandler.registers[05] = ioHandler.registers[06]; // Set TIMA modulo
 				if ((ioHandler.registers[0xFF] & INT_TIMA) != 0)
 					triggerInterrupt(INT_TIMA);
@@ -605,13 +611,13 @@ class Dmgcpu {
 
 			// LCY Coincidence
 			// The +1 is due to the LCY register being just about to be incremented
-			int cline = JavaBoy.unsign(ioHandler.registers[0x44]) + 1;
+			int cline = StaticFunctions.unsign(ioHandler.registers[0x44]) + 1;
 			if (cline == 152)
 				cline = 0;
 
 			if (((ioHandler.registers[0xFF] & INT_LCDC) != 0) && ((ioHandler.registers[0x41] & 64) != 0)
-					&& (JavaBoy.unsign(ioHandler.registers[0x45]) == cline) && ((ioHandler.registers[0x40] & 0x80) != 0)
-					&& (cline < 0x90)) {
+					&& (StaticFunctions.unsign(ioHandler.registers[0x45]) == cline)
+					&& ((ioHandler.registers[0x40] & 0x80) != 0) && (cline < 0x90)) {
 				// System.out.println("Hblank " + cline);
 				// System.out.println("** LCDC Int **");
 				triggerInterrupt(INT_LCDC);
@@ -628,7 +634,7 @@ class Dmgcpu {
 				ioHandler.performHdma();
 			}
 
-			if (JavaBoy.unsign(ioHandler.registers[0x44]) == 143) {
+			if (StaticFunctions.unsign(ioHandler.registers[0x44]) == 143) {
 				// System.out.println("VBLANK!");
 				for (int r = 144; r < 170; r++) {
 					graphicsChip.notifyScanline(r);
@@ -657,11 +663,12 @@ class Dmgcpu {
 
 			}
 
-			graphicsChip.notifyScanline(JavaBoy.unsign(ioHandler.registers[0x44]));
-			ioHandler.registers[0x44] = (byte) (JavaBoy.unsign(ioHandler.registers[0x44]) + 1);
-			// System.out.println("Reg 44 = " + JavaBoy.unsign(ioHandler.registers[0x44]));
+			graphicsChip.notifyScanline(StaticFunctions.unsign(ioHandler.registers[0x44]));
+			ioHandler.registers[0x44] = (byte) (StaticFunctions.unsign(ioHandler.registers[0x44]) + 1);
+			// System.out.println("Reg 44 = " +
+			// StaticFunctions.unsign(ioHandler.registers[0x44]));
 
-			if (JavaBoy.unsign(ioHandler.registers[0x44]) >= 153) {
+			if (StaticFunctions.unsign(ioHandler.registers[0x44]) >= 153) {
 				// System.out.println("VBlank");
 
 				ioHandler.registers[0x44] = 0;
@@ -703,17 +710,17 @@ class Dmgcpu {
 
 			/*
 			 * GameBoyScreen j = (GameBoyScreen) applet; if (j.viewFrameCounter.getState())
-			 * { System.out.print(" " + JavaBoy.hexWord(pc) + ":" +
-			 * JavaBoy.hexByte(cartridge.currentBank)); }
+			 * { System.out.print(" " + StaticFunctions.hexWord(pc) + ":" +
+			 * StaticFunctions.hexByte(cartridge.currentBank)); }
 			 */
-			// System.out.print(" " + JavaBoy.hexWord(pc) + ":" +
-			// JavaBoy.hexByte(cartridge.currentBank));
+			// System.out.print(" " + StaticFunctions.hexWord(pc) + ":" +
+			// StaticFunctions.hexByte(cartridge.currentBank));
 			instrCount++;
 
-			b1 = JavaBoy.unsign(addressRead(pc));
+			b1 = StaticFunctions.unsign(addressRead(pc));
 			offset = addressRead(pc + 1);
-			b3 = JavaBoy.unsign(addressRead(pc + 2));
-			b2 = JavaBoy.unsign((short) offset);
+			b3 = StaticFunctions.unsign(addressRead(pc + 2));
+			b2 = StaticFunctions.unsign((short) offset);
 
 			switch (b1) {
 			case 0x00: // NOP
@@ -814,7 +821,7 @@ class Dmgcpu {
 				break;
 			case 0x0A: // LD A, (BC)
 				pc++;
-				a = JavaBoy.unsign(addressRead((b << 8) + c));
+				a = StaticFunctions.unsign(addressRead((b << 8) + c));
 				break;
 			case 0x0B: // DEC BC
 				pc++;
@@ -1004,7 +1011,7 @@ class Dmgcpu {
 				break;
 			case 0x1A: // LD A, (DE)
 				pc++;
-				a = JavaBoy.unsign(addressRead((d << 8) + e));
+				a = StaticFunctions.unsign(addressRead((d << 8) + e));
 				break;
 			case 0x1B: // DEC DE
 				pc++;
@@ -1147,7 +1154,7 @@ class Dmgcpu {
 				int upperNibble = (a & 0xF0) >> 4;
 				int lowerNibble = a & 0x0F;
 
-				// System.out.println("Daa at " + JavaBoy.hexWord(pc));
+				// System.out.println("Daa at " + StaticFunctions.hexWord(pc));
 
 				newf = (short) (f & F_SUBTRACT);
 
@@ -1246,7 +1253,7 @@ class Dmgcpu {
 				break;
 			case 0x2A: // LDI A, (HL)
 				pc++;
-				a = JavaBoy.unsign(addressRead(hl));
+				a = StaticFunctions.unsign(addressRead(hl));
 				hl++;
 				break;
 			case 0x2B: // DEC HL
@@ -1333,7 +1340,7 @@ class Dmgcpu {
 			case 0x34: // INC (HL)
 				pc++;
 				f &= F_CARRY;
-				dat = JavaBoy.unsign(addressRead(hl));
+				dat = StaticFunctions.unsign(addressRead(hl));
 				switch (dat) {
 				case 0xFF:
 					f |= F_HALFCARRY + F_ZERO;
@@ -1352,7 +1359,7 @@ class Dmgcpu {
 				pc++;
 				f &= F_CARRY;
 				f |= F_SUBTRACT;
-				dat = JavaBoy.unsign(addressRead(hl));
+				dat = StaticFunctions.unsign(addressRead(hl));
 				switch (dat) {
 				case 0x00:
 					f |= F_HALFCARRY;
@@ -1399,7 +1406,7 @@ class Dmgcpu {
 				break;
 			case 0x3A: // LD A, (HL-)
 				pc++;
-				a = JavaBoy.unsign(addressRead(hl));
+				a = StaticFunctions.unsign(addressRead(hl));
 				hl = (hl - 1) & 0xFFFF;
 				break;
 			case 0x3B: // DEC SP
@@ -1470,14 +1477,14 @@ class Dmgcpu {
 
 			case 0x76: // HALT
 				interruptsEnabled = true;
-				// System.out.println("Halted, pc = " + JavaBoy.hexWord(pc));
+				// System.out.println("Halted, pc = " + StaticFunctions.hexWord(pc));
 				while (ioHandler.registers[0x0F] == 0) {
 					initiateInterrupts();
 					instrCount++;
 				}
 
 				// System.out.println("intrcount: " + instrCount + " IE: " +
-				// JavaBoy.hexByte(ioHandler.registers[0xFF]));
+				// StaticFunctions.hexByte(ioHandler.registers[0xFF]));
 				// System.out.println(" Finished halt");
 				pc++;
 				break;
@@ -1488,7 +1495,7 @@ class Dmgcpu {
 				break;
 			case 0xC0: // RET NZ
 				if ((f & F_ZERO) == 0) {
-					pc = (JavaBoy.unsign(addressRead(sp + 1)) << 8) + JavaBoy.unsign(addressRead(sp));
+					pc = (StaticFunctions.unsign(addressRead(sp + 1)) << 8) + StaticFunctions.unsign(addressRead(sp));
 					sp += 2;
 				} else {
 					pc++;
@@ -1496,8 +1503,8 @@ class Dmgcpu {
 				break;
 			case 0xC1: // POP BC
 				pc++;
-				c = JavaBoy.unsign(addressRead(sp));
-				b = JavaBoy.unsign(addressRead(sp + 1));
+				c = StaticFunctions.unsign(addressRead(sp));
+				b = StaticFunctions.unsign(addressRead(sp + 1));
 				sp += 2;
 				break;
 			case 0xC2: // JP NZ, nnnn
@@ -1557,14 +1564,14 @@ class Dmgcpu {
 				break;
 			case 0xC8: // RET Z
 				if ((f & F_ZERO) == F_ZERO) {
-					pc = (JavaBoy.unsign(addressRead(sp + 1)) << 8) + JavaBoy.unsign(addressRead(sp));
+					pc = (StaticFunctions.unsign(addressRead(sp + 1)) << 8) + StaticFunctions.unsign(addressRead(sp));
 					sp += 2;
 				} else {
 					pc++;
 				}
 				break;
 			case 0xC9: // RET
-				pc = (JavaBoy.unsign(addressRead(sp + 1)) << 8) + JavaBoy.unsign(addressRead(sp));
+				pc = (StaticFunctions.unsign(addressRead(sp + 1)) << 8) + StaticFunctions.unsign(addressRead(sp));
 				sp += 2;
 				break;
 			case 0xCA: // JP Z, nnnn
@@ -1578,7 +1585,8 @@ class Dmgcpu {
 				pc += 2;
 				int regNum = b2 & 0x07;
 				int data = registerRead(regNum);
-				// System.out.println("0xCB instr! - reg " + JavaBoy.hexByte((short) (b2 &
+				// System.out.println("0xCB instr! - reg " + StaticFunctions.hexByte((short) (b2
+				// &
 				// 0xF4)));
 				if ((b2 & 0xC0) == 0) {
 					switch ((b2 & 0xF8)) {
@@ -1693,7 +1701,7 @@ class Dmgcpu {
 						} else {
 							f = 0;
 						}
-						// System.out.println("SWAP - answer is " + JavaBoy.hexByte(data));
+						// System.out.println("SWAP - answer is " + StaticFunctions.hexByte(data));
 						registerWrite(regNum, data);
 						break;
 					case 0x38: // SRL r
@@ -1789,7 +1797,7 @@ class Dmgcpu {
 				break;
 			case 0xD0: // RET NC
 				if ((f & F_CARRY) == 0) {
-					pc = (JavaBoy.unsign(addressRead(sp + 1)) << 8) + JavaBoy.unsign(addressRead(sp));
+					pc = (StaticFunctions.unsign(addressRead(sp + 1)) << 8) + StaticFunctions.unsign(addressRead(sp));
 					sp += 2;
 				} else {
 					pc++;
@@ -1797,8 +1805,8 @@ class Dmgcpu {
 				break;
 			case 0xD1: // POP DE
 				pc++;
-				e = JavaBoy.unsign(addressRead(sp));
-				d = JavaBoy.unsign(addressRead(sp + 1));
+				e = StaticFunctions.unsign(addressRead(sp));
+				d = StaticFunctions.unsign(addressRead(sp + 1));
 				sp += 2;
 				break;
 			case 0xD2: // JP NC, nnnn
@@ -1854,7 +1862,7 @@ class Dmgcpu {
 				break;
 			case 0xD8: // RET C
 				if ((f & F_CARRY) == F_CARRY) {
-					pc = (JavaBoy.unsign(addressRead(sp + 1)) << 8) + JavaBoy.unsign(addressRead(sp));
+					pc = (StaticFunctions.unsign(addressRead(sp + 1)) << 8) + StaticFunctions.unsign(addressRead(sp));
 					sp += 2;
 				} else {
 					pc++;
@@ -1863,7 +1871,7 @@ class Dmgcpu {
 			case 0xD9: // RETI
 				interruptsEnabled = true;
 				inInterrupt = false;
-				pc = (JavaBoy.unsign(addressRead(sp + 1)) << 8) + JavaBoy.unsign(addressRead(sp));
+				pc = (StaticFunctions.unsign(addressRead(sp + 1)) << 8) + StaticFunctions.unsign(addressRead(sp));
 				sp += 2;
 				break;
 			case 0xDA: // JP C, nnnn
@@ -1919,7 +1927,7 @@ class Dmgcpu {
 				break;
 			case 0xE1: // POP HL
 				pc++;
-				hl = (JavaBoy.unsign(addressRead(sp + 1)) << 8) + JavaBoy.unsign(addressRead(sp));
+				hl = (StaticFunctions.unsign(addressRead(sp + 1)) << 8) + StaticFunctions.unsign(addressRead(sp));
 				sp += 2;
 				break;
 			case 0xE2: // LDH (FF00 + C), A
@@ -1985,17 +1993,17 @@ class Dmgcpu {
 				break;
 			case 0xF0: // LDH A, (FFnn)
 				pc += 2;
-				a = JavaBoy.unsign(addressRead(0xFF00 + b2));
+				a = StaticFunctions.unsign(addressRead(0xFF00 + b2));
 				break;
 			case 0xF1: // POP AF
 				pc++;
-				f = JavaBoy.unsign(addressRead(sp));
-				a = JavaBoy.unsign(addressRead(sp + 1));
+				f = StaticFunctions.unsign(addressRead(sp));
+				a = StaticFunctions.unsign(addressRead(sp + 1));
 				sp += 2;
 				break;
 			case 0xF2: // LD A, (FF00 + C)
 				pc++;
-				a = JavaBoy.unsign(addressRead(0xFF00 + c));
+				a = StaticFunctions.unsign(addressRead(0xFF00 + c));
 				break;
 			case 0xF3: // DI
 				pc++;
@@ -2041,7 +2049,7 @@ class Dmgcpu {
 				break;
 			case 0xFA: // LD A, (nnnn)
 				pc += 3;
-				a = JavaBoy.unsign(addressRead((b3 << 8) + b2));
+				a = StaticFunctions.unsign(addressRead((b3 << 8) + b2));
 				break;
 			case 0xFB: // EI
 				pc++;
@@ -2170,7 +2178,7 @@ class Dmgcpu {
 					registerWrite((b1 & 0x38) >> 3, registerRead(b1 & 0x07));
 
 				} else {
-					System.out.println("Unrecognized opcode (" + JavaBoy.hexByte(b1) + ")");
+					System.out.println("Unrecognized opcode (" + StaticFunctions.hexByte(b1) + ")");
 					terminate = true;
 					pc++;
 					break;
@@ -2219,12 +2227,12 @@ class Dmgcpu {
 		System.out.println("Addr  Data      Instruction");
 
 		for (int r = 0; r < numInstr; r++) {
-			short b1 = JavaBoy.unsign(addressRead(address));
+			short b1 = StaticFunctions.unsign(addressRead(address));
 			short offset = addressRead(address + 1);
-			short b3 = JavaBoy.unsign(addressRead(address + 2));
-			short b2 = JavaBoy.unsign(offset);
+			short b3 = StaticFunctions.unsign(addressRead(address + 2));
+			short b2 = StaticFunctions.unsign(offset);
 
-			String instr = new String("Unknown Opcode! (" + Integer.toHexString(JavaBoy.unsign(b1)) + ")");
+			String instr = new String("Unknown Opcode! (" + Integer.toHexString(StaticFunctions.unsign(b1)) + ")");
 			byte instrLength = 1;
 
 			switch (b1) {
@@ -2232,7 +2240,7 @@ class Dmgcpu {
 				instr = "NOP";
 				break;
 			case 0x01:
-				instr = "LD BC, " + JavaBoy.hexWord((b3 << 8) + b2);
+				instr = "LD BC, " + StaticFunctions.hexWord((b3 << 8) + b2);
 				instrLength = 3;
 				break;
 			case 0x02:
@@ -2248,14 +2256,14 @@ class Dmgcpu {
 				instr = "DEC B";
 				break;
 			case 0x06:
-				instr = "LD B, " + JavaBoy.hexByte(b2);
+				instr = "LD B, " + StaticFunctions.hexByte(b2);
 				instrLength = 2;
 				break;
 			case 0x07:
 				instr = "RLC A";
 				break;
 			case 0x08:
-				instr = "LD (" + JavaBoy.hexWord((b3 << 8) + b2) + "), SP";
+				instr = "LD (" + StaticFunctions.hexWord((b3 << 8) + b2) + "), SP";
 				instrLength = 3; // Non Z80
 				break;
 			case 0x09:
@@ -2274,7 +2282,7 @@ class Dmgcpu {
 				instr = "DEC C";
 				break;
 			case 0x0E:
-				instr = "LD C, " + JavaBoy.hexByte(b2);
+				instr = "LD C, " + StaticFunctions.hexByte(b2);
 				instrLength = 2;
 				break;
 			case 0x0F:
@@ -2285,7 +2293,7 @@ class Dmgcpu {
 				instrLength = 2; // STOP instruction must be followed by a NOP
 				break;
 			case 0x11:
-				instr = "LD DE, " + JavaBoy.hexWord((b3 << 8) + b2);
+				instr = "LD DE, " + StaticFunctions.hexWord((b3 << 8) + b2);
 				instrLength = 3;
 				break;
 			case 0x12:
@@ -2301,14 +2309,14 @@ class Dmgcpu {
 				instr = "DEC D";
 				break;
 			case 0x16:
-				instr = "LD D, " + JavaBoy.hexByte(b2);
+				instr = "LD D, " + StaticFunctions.hexByte(b2);
 				instrLength = 2;
 				break;
 			case 0x17:
 				instr = "RL A";
 				break;
 			case 0x18:
-				instr = "JR " + JavaBoy.hexWord(address + 2 + offset);
+				instr = "JR " + StaticFunctions.hexWord(address + 2 + offset);
 				instrLength = 2;
 				break;
 			case 0x19:
@@ -2327,19 +2335,19 @@ class Dmgcpu {
 				instr = "DEC E";
 				break;
 			case 0x1E:
-				instr = "LD E, " + JavaBoy.hexByte(b2);
+				instr = "LD E, " + StaticFunctions.hexByte(b2);
 				instrLength = 2;
 				break;
 			case 0x1F:
 				instr = "RR A";
 				break;
 			case 0x20:
-				instr = "JR NZ, " + JavaBoy.hexWord(address + 2 + offset) + ": " + offset;
+				instr = "JR NZ, " + StaticFunctions.hexWord(address + 2 + offset) + ": " + offset;
 
 				instrLength = 2;
 				break;
 			case 0x21:
-				instr = "LD HL, " + JavaBoy.hexWord((b3 << 8) + b2);
+				instr = "LD HL, " + StaticFunctions.hexWord((b3 << 8) + b2);
 				instrLength = 3;
 				break;
 			case 0x22:
@@ -2355,14 +2363,14 @@ class Dmgcpu {
 				instr = "DEC H";
 				break;
 			case 0x26:
-				instr = "LD H, " + JavaBoy.hexByte(b2);
+				instr = "LD H, " + StaticFunctions.hexByte(b2);
 				instrLength = 2;
 				break;
 			case 0x27:
 				instr = "DAA";
 				break;
 			case 0x28:
-				instr = "JR Z, " + JavaBoy.hexWord(address + 2 + offset);
+				instr = "JR Z, " + StaticFunctions.hexWord(address + 2 + offset);
 				instrLength = 2;
 				break;
 			case 0x29:
@@ -2381,18 +2389,18 @@ class Dmgcpu {
 				instr = "DEC L";
 				break;
 			case 0x2E:
-				instr = "LD L, " + JavaBoy.hexByte(b2);
+				instr = "LD L, " + StaticFunctions.hexByte(b2);
 				instrLength = 2;
 				break;
 			case 0x2F:
 				instr = "CPL";
 				break;
 			case 0x30:
-				instr = "JR NC, " + JavaBoy.hexWord(address + 2 + offset);
+				instr = "JR NC, " + StaticFunctions.hexWord(address + 2 + offset);
 				instrLength = 2;
 				break;
 			case 0x31:
-				instr = "LD SP, " + JavaBoy.hexWord((b3 << 8) + b2);
+				instr = "LD SP, " + StaticFunctions.hexWord((b3 << 8) + b2);
 				instrLength = 3;
 				break;
 			case 0x32:
@@ -2408,14 +2416,14 @@ class Dmgcpu {
 				instr = "DEC (HL)";
 				break;
 			case 0x36:
-				instr = "LD (HL), " + JavaBoy.hexByte(b2);
+				instr = "LD (HL), " + StaticFunctions.hexByte(b2);
 				instrLength = 2;
 				break;
 			case 0x37:
 				instr = "SCF"; // Set carry flag?
 				break;
 			case 0x38:
-				instr = "JR C, " + JavaBoy.hexWord(address + 2 + offset);
+				instr = "JR C, " + StaticFunctions.hexWord(address + 2 + offset);
 				instrLength = 2;
 				break;
 			case 0x39:
@@ -2434,7 +2442,7 @@ class Dmgcpu {
 				instr = "DEC A";
 				break;
 			case 0x3E:
-				instr = "LD A, " + JavaBoy.hexByte(JavaBoy.unsign(b2));
+				instr = "LD A, " + StaticFunctions.hexByte(StaticFunctions.unsign(b2));
 				instrLength = 2;
 				break;
 			case 0x3F:
@@ -2455,22 +2463,22 @@ class Dmgcpu {
 				instr = "POP BC";
 				break;
 			case 0xC2:
-				instr = "JP NZ, " + JavaBoy.hexWord((b3 << 8) + b2);
+				instr = "JP NZ, " + StaticFunctions.hexWord((b3 << 8) + b2);
 				instrLength = 3;
 				break;
 			case 0xC3:
-				instr = "JP " + JavaBoy.hexWord((b3 << 8) + b2);
+				instr = "JP " + StaticFunctions.hexWord((b3 << 8) + b2);
 				instrLength = 3;
 				break;
 			case 0xC4:
-				instr = "CALL NZ, " + JavaBoy.hexWord((b3 << 8) + b2);
+				instr = "CALL NZ, " + StaticFunctions.hexWord((b3 << 8) + b2);
 				instrLength = 3;
 				break;
 			case 0xC5:
 				instr = "PUSH BC";
 				break;
 			case 0xC6:
-				instr = "ADD A, " + JavaBoy.hexByte(b2);
+				instr = "ADD A, " + StaticFunctions.hexByte(b2);
 				instrLength = 2;
 				break;
 			case 0xC7:
@@ -2483,22 +2491,22 @@ class Dmgcpu {
 				instr = "RET";
 				break;
 			case 0xCA:
-				instr = "JP Z, " + JavaBoy.hexWord((b3 << 8) + b2);
+				instr = "JP Z, " + StaticFunctions.hexWord((b3 << 8) + b2);
 				instrLength = 3;
 				break;
 
 			// 0xCB = Shifts (see below)
 
 			case 0xCC:
-				instr = "CALL Z, " + JavaBoy.hexWord((b3 << 8) + b2);
+				instr = "CALL Z, " + StaticFunctions.hexWord((b3 << 8) + b2);
 				instrLength = 3;
 				break;
 			case 0xCD:
-				instr = "CALL " + JavaBoy.hexWord((b3 << 8) + b2);
+				instr = "CALL " + StaticFunctions.hexWord((b3 << 8) + b2);
 				instrLength = 3;
 				break;
 			case 0xCE:
-				instr = "ADC A, " + JavaBoy.hexByte(b2); // Signed or unsigned?
+				instr = "ADC A, " + StaticFunctions.hexByte(b2); // Signed or unsigned?
 				instrLength = 2;
 				break;
 			case 0xCF:
@@ -2511,21 +2519,21 @@ class Dmgcpu {
 				instr = "POP DE";
 				break;
 			case 0xD2:
-				instr = "JP NC, " + JavaBoy.hexWord((b3 << 8) + b2);
+				instr = "JP NC, " + StaticFunctions.hexWord((b3 << 8) + b2);
 				instrLength = 3;
 				break;
 
 			// 0xD3: Unknown
 
 			case 0xD4:
-				instr = "CALL NC, " + JavaBoy.hexWord((b3 << 8) + b2);
+				instr = "CALL NC, " + StaticFunctions.hexWord((b3 << 8) + b2);
 				instrLength = 3;
 				break;
 			case 0xD5:
 				instr = "PUSH DE";
 				break;
 			case 0xD6:
-				instr = "SUB A, " + JavaBoy.hexByte(b2);
+				instr = "SUB A, " + StaticFunctions.hexByte(b2);
 				instrLength = 2;
 				break;
 			case 0xD7:
@@ -2538,28 +2546,28 @@ class Dmgcpu {
 				instr = "RETI";
 				break;
 			case 0xDA:
-				instr = "JP C, " + JavaBoy.hexWord((b3 << 8) + b2);
+				instr = "JP C, " + StaticFunctions.hexWord((b3 << 8) + b2);
 				instrLength = 3;
 				break;
 
 			// 0xDB: Unknown
 
 			case 0xDC:
-				instr = "CALL C, " + JavaBoy.hexWord((b3 << 8) + b2);
+				instr = "CALL C, " + StaticFunctions.hexWord((b3 << 8) + b2);
 				instrLength = 3;
 				break;
 
 			// 0xDD: Unknown
 
 			case 0xDE:
-				instr = "SBC A, " + JavaBoy.hexByte(b2);
+				instr = "SBC A, " + StaticFunctions.hexByte(b2);
 				instrLength = 2;
 				break;
 			case 0xDF:
 				instr = "RST 18";
 				break;
 			case 0xE0:
-				instr = "LDH (FF" + JavaBoy.hexByte(b2 & 0xFF) + "), A";
+				instr = "LDH (FF" + StaticFunctions.hexByte(b2 & 0xFF) + "), A";
 				instrLength = 2;
 				break;
 			case 0xE1:
@@ -2575,35 +2583,35 @@ class Dmgcpu {
 				instr = "PUSH HL";
 				break;
 			case 0xE6:
-				instr = "AND " + JavaBoy.hexByte(b2);
+				instr = "AND " + StaticFunctions.hexByte(b2);
 				instrLength = 2;
 				break;
 			case 0xE7:
 				instr = "RST 20";
 				break;
 			case 0xE8:
-				instr = "ADD SP, " + JavaBoy.hexByte(offset);
+				instr = "ADD SP, " + StaticFunctions.hexByte(offset);
 				instrLength = 2;
 				break;
 			case 0xE9:
 				instr = "JP (HL)";
 				break;
 			case 0xEA:
-				instr = "LD (" + JavaBoy.hexWord((b3 << 8) + b2) + "), A";
+				instr = "LD (" + StaticFunctions.hexWord((b3 << 8) + b2) + "), A";
 				instrLength = 3;
 				break;
 
 			// 0xEB - 0xED: Unknown
 
 			case 0xEE:
-				instr = "XOR " + JavaBoy.hexByte(b2);
+				instr = "XOR " + StaticFunctions.hexByte(b2);
 				instrLength = 2;
 				break;
 			case 0xEF:
 				instr = "RST 28";
 				break;
 			case 0xF0:
-				instr = "LDH A, (FF" + JavaBoy.hexByte(b2) + ")";
+				instr = "LDH A, (FF" + StaticFunctions.hexByte(b2) + ")";
 				instrLength = 2;
 				break;
 			case 0xF1:
@@ -2622,21 +2630,21 @@ class Dmgcpu {
 				instr = "PUSH AF";
 				break;
 			case 0xF6:
-				instr = "OR " + JavaBoy.hexByte(b2);
+				instr = "OR " + StaticFunctions.hexByte(b2);
 				instrLength = 2;
 				break;
 			case 0xF7:
 				instr = "RST 30";
 				break;
 			case 0xF8:
-				instr = "LD HL, SP + " + JavaBoy.hexByte(offset); // Check this one, docs disagree
+				instr = "LD HL, SP + " + StaticFunctions.hexByte(offset); // Check this one, docs disagree
 				instrLength = 2;
 				break;
 			case 0xF9:
 				instr = "LD SP, HL";
 				break;
 			case 0xFA:
-				instr = "LD A, (" + JavaBoy.hexWord((b3 << 8) + b2) + ")";
+				instr = "LD A, (" + StaticFunctions.hexWord((b3 << 8) + b2) + ")";
 				instrLength = 3;
 				break;
 			case 0xFB:
@@ -2646,7 +2654,7 @@ class Dmgcpu {
 			// 0xFC - 0xFD: Unknown
 
 			case 0xFE:
-				instr = "CP " + JavaBoy.hexByte(b2);
+				instr = "CP " + StaticFunctions.hexByte(b2);
 				instrLength = 2;
 				break;
 			case 0xFF:
@@ -2660,7 +2668,8 @@ class Dmgcpu {
 			// The exception to this rule is 0x76, which is HALT, and takes
 			// the place of LD (HL), (HL)
 
-			if ((JavaBoy.unsign(b1) >= 0x40) && (JavaBoy.unsign(b1) <= 0x7F) && ((JavaBoy.unsign(b1) != 0x76))) {
+			if ((StaticFunctions.unsign(b1) >= 0x40) && (StaticFunctions.unsign(b1) <= 0x7F)
+					&& ((StaticFunctions.unsign(b1) != 0x76))) {
 				/* 0x76 is HALT, and takes the place of LD (HL), (HL) */
 				int sourceRegister = b1 & 0x07; /* Lower 3 bits */
 				int destRegister = (b1 & 0x38) >> 3; /* Bits 5 - 3 */
@@ -2681,9 +2690,9 @@ class Dmgcpu {
 			// 1 0 1 1 0 R R R Logical or OR
 			// 1 0 1 1 1 R R R Compare? CP
 
-			if ((JavaBoy.unsign(b1) >= 0x80) && (JavaBoy.unsign(b1) <= 0xBF)) {
-				int sourceRegister = JavaBoy.unsign(b1) & 0x07;
-				int operation = (JavaBoy.unsign(b1) & 0x38) >> 3;
+			if ((StaticFunctions.unsign(b1) >= 0x80) && (StaticFunctions.unsign(b1) <= 0xBF)) {
+				int sourceRegister = StaticFunctions.unsign(b1) & 0x07;
+				int operation = (StaticFunctions.unsign(b1) & 0x38) >> 3;
 
 				// System.out.println("ALU Op " + operation + " reg " + sourceRegister);
 
@@ -2705,47 +2714,48 @@ class Dmgcpu {
 			// 1 0 N N N R R R Reset Bit n RES
 			// 1 1 N N N R R R Set Bit n SET
 
-			if (JavaBoy.unsign(b1) == 0xCB) {
+			if (StaticFunctions.unsign(b1) == 0xCB) {
 				int operation;
 				int sourceRegister;
 				int bitNumber;
 
 				instrLength = 2;
 
-				switch ((JavaBoy.unsign(b2) & 0xC0) >> 6) {
+				switch ((StaticFunctions.unsign(b2) & 0xC0) >> 6) {
 				case 0:
-					operation = (JavaBoy.unsign(b2) & 0x38) >> 3;
-					sourceRegister = JavaBoy.unsign(b2) & 0x07;
+					operation = (StaticFunctions.unsign(b2) & 0x38) >> 3;
+					sourceRegister = StaticFunctions.unsign(b2) & 0x07;
 					instr = shiftOperations[operation] + " " + registerNames[sourceRegister];
 					break;
 				case 1:
-					bitNumber = (JavaBoy.unsign(b2) & 0x38) >> 3;
-					sourceRegister = JavaBoy.unsign(b2) & 0x07;
+					bitNumber = (StaticFunctions.unsign(b2) & 0x38) >> 3;
+					sourceRegister = StaticFunctions.unsign(b2) & 0x07;
 					instr = "BIT " + bitNumber + ", " + registerNames[sourceRegister];
 					break;
 				case 2:
-					bitNumber = (JavaBoy.unsign(b2) & 0x38) >> 3;
-					sourceRegister = JavaBoy.unsign(b2) & 0x07;
+					bitNumber = (StaticFunctions.unsign(b2) & 0x38) >> 3;
+					sourceRegister = StaticFunctions.unsign(b2) & 0x07;
 					instr = "RES " + bitNumber + ", " + registerNames[sourceRegister];
 					break;
 				case 3:
-					bitNumber = (JavaBoy.unsign(b2) & 0x38) >> 3;
-					sourceRegister = JavaBoy.unsign(b2) & 0x07;
+					bitNumber = (StaticFunctions.unsign(b2) & 0x38) >> 3;
+					sourceRegister = StaticFunctions.unsign(b2) & 0x07;
 					instr = "SET " + bitNumber + ", " + registerNames[sourceRegister];
 					break;
 				}
 			}
 
-			System.out.print(JavaBoy.hexWord(address) + ": " + JavaBoy.hexByte(JavaBoy.unsign(b1)));
+			System.out.print(
+					StaticFunctions.hexWord(address) + ": " + StaticFunctions.hexByte(StaticFunctions.unsign(b1)));
 
 			if (instrLength >= 2) {
-				System.out.print(" " + JavaBoy.hexByte(JavaBoy.unsign(b2)));
+				System.out.print(" " + StaticFunctions.hexByte(StaticFunctions.unsign(b2)));
 			} else {
 				System.out.print("   ");
 			}
 
 			if (instrLength == 3) {
-				System.out.print(" " + JavaBoy.hexByte(JavaBoy.unsign(b3)) + "  ");
+				System.out.print(" " + StaticFunctions.hexByte(StaticFunctions.unsign(b3)) + "  ");
 			} else {
 				System.out.print("     ");
 			}
@@ -2762,10 +2772,10 @@ class Dmgcpu {
 		int numInstr = endAddress - address + 1; // inclusive
 
 		for (int r = 0; r < numInstr; r++) {
-			short b1 = JavaBoy.unsign(addressRead(address));
+			short b1 = StaticFunctions.unsign(addressRead(address));
 			short offset = addressRead(address + 1);
-			short b3 = JavaBoy.unsign(addressRead(address + 2));
-			short b2 = JavaBoy.unsign(offset);
+			short b3 = StaticFunctions.unsign(addressRead(address + 2));
+			short b2 = StaticFunctions.unsign(offset);
 			byte instrLength = 1;
 
 			switch (b1) {
@@ -2810,62 +2820,71 @@ class Dmgcpu {
 
 			case 0x18:
 				if (address + 2 + offset == destination) {
-					System.out.println(JavaBoy.hexWord(address) + ": JR " + JavaBoy.hexWord(address + 2 + offset));
+					System.out.println(
+							StaticFunctions.hexWord(address) + ": JR " + StaticFunctions.hexWord(address + 2 + offset));
 				}
 				instrLength = 2;
 				break;
 			case 0xC2:
 				if ((b3 << 8) + b2 == destination) {
-					System.out.println(JavaBoy.hexWord(address) + ": JP NZ, " + JavaBoy.hexWord((b3 << 8) + b2));
+					System.out.println(
+							StaticFunctions.hexWord(address) + ": JP NZ, " + StaticFunctions.hexWord((b3 << 8) + b2));
 				}
 				instrLength = 3;
 				break;
 			case 0x20:
 				if (address + 2 + offset == destination) {
-					System.out.println(JavaBoy.hexWord(address) + ": JR NZ, " + JavaBoy.hexWord(address + 2 + offset)
-							+ ": " + offset);
+					System.out.println(StaticFunctions.hexWord(address) + ": JR NZ, "
+							+ StaticFunctions.hexWord(address + 2 + offset) + ": " + offset);
 				}
 				instrLength = 2;
 				break;
 			case 0x28:
 				if (address + 2 + offset == destination) {
-					System.out.println(JavaBoy.hexWord(address) + ": JR Z, " + JavaBoy.hexWord(address + 2 + offset));
+					System.out.println(StaticFunctions.hexWord(address) + ": JR Z, "
+							+ StaticFunctions.hexWord(address + 2 + offset));
 				}
 				instrLength = 2;
 				break;
 			case 0x30:
 				if (address + 2 + offset == destination) {
-					System.out.println(JavaBoy.hexWord(address) + ": JR NC, " + JavaBoy.hexWord(address + 2 + offset));
+					System.out.println(StaticFunctions.hexWord(address) + ": JR NC, "
+							+ StaticFunctions.hexWord(address + 2 + offset));
 				}
 				instrLength = 2;
 				break;
 			case 0x38:
 				if (address + 2 + offset == destination) {
-					System.out.println(JavaBoy.hexWord(address) + ": JR C, " + JavaBoy.hexWord(address + 2 + offset));
+					System.out.println(StaticFunctions.hexWord(address) + ": JR C, "
+							+ StaticFunctions.hexWord(address + 2 + offset));
 				}
 				instrLength = 2;
 				break;
 			case 0xC3:
 				if ((b3 << 8) + b2 == destination) {
-					System.out.println(JavaBoy.hexWord(address) + ": JP " + JavaBoy.hexWord((b3 << 8) + b2));
+					System.out.println(
+							StaticFunctions.hexWord(address) + ": JP " + StaticFunctions.hexWord((b3 << 8) + b2));
 				}
 				instrLength = 3;
 				break;
 			case 0xCA:
 				if ((b3 << 8) + b2 == destination) {
-					System.out.println(JavaBoy.hexWord(address) + ": JP Z, " + JavaBoy.hexWord((b3 << 8) + b2));
+					System.out.println(
+							StaticFunctions.hexWord(address) + ": JP Z, " + StaticFunctions.hexWord((b3 << 8) + b2));
 				}
 				instrLength = 3;
 				break;
 			case 0xD2:
 				if ((b3 << 8) + b2 == destination) {
-					System.out.println(JavaBoy.hexWord(address) + ": JP NC, " + JavaBoy.hexWord((b3 << 8) + b2));
+					System.out.println(
+							StaticFunctions.hexWord(address) + ": JP NC, " + StaticFunctions.hexWord((b3 << 8) + b2));
 				}
 				instrLength = 3;
 				break;
 			case 0xDA:
 				if ((b3 << 8) + b2 == destination) {
-					System.out.println(JavaBoy.hexWord(address) + ": JP C, " + JavaBoy.hexWord((b3 << 8) + b2));
+					System.out.println(
+							StaticFunctions.hexWord(address) + ": JP C, " + StaticFunctions.hexWord((b3 << 8) + b2));
 				}
 				instrLength = 3;
 				break;
@@ -2874,7 +2893,7 @@ class Dmgcpu {
 			 */
 
 			}
-			if (JavaBoy.unsign(b1) == 0xCB) {
+			if (StaticFunctions.unsign(b1) == 0xCB) {
 				instrLength = 2;
 			}
 			address += instrLength;

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.GameBoyScreenController">
+   <children>
+      <MenuBar>
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Open ROM" />
+                  <Menu mnemonicParsing="false" text="Open recent...">
+                    <items>
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                      <MenuItem mnemonicParsing="false" text="Clear list" />
+                    </items>
+                  </Menu>
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Play" />
+                  <MenuItem mnemonicParsing="false" text="Pause" />
+                  <MenuItem mnemonicParsing="false" text="Reset" />
+                  <MenuItem mnemonicParsing="false" text="Define colors..." />
+                  <MenuItem mnemonicParsing="false" text="Use Gameboy Color features" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Open ROM" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="View">
+               <items>
+                  <Menu mnemonicParsing="false" text="Size...">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="x1 (real pixel)" />
+                        <MenuItem mnemonicParsing="false" text="x2" />
+                        <MenuItem mnemonicParsing="false" text="x3" />
+                        <MenuItem mnemonicParsing="false" text="x4" />
+                        <MenuItem mnemonicParsing="false" text="x5" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Frame skip....">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="0" />
+                        <MenuItem mnemonicParsing="false" text="1" />
+                        <MenuItem mnemonicParsing="false" text="2" />
+                        <MenuItem mnemonicParsing="false" text="3" />
+                        <MenuItem mnemonicParsing="false" text="4" />
+                     </items>
+                  </Menu>
+               </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Sound">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Serial Port">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="About" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Debug">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="About" />
+               </items>
+            </Menu>
+        </menus>
+      </MenuBar>
+      <Canvas height="325.0" width="530.0" />
+   </children>
+</VBox>

@@ -22,26 +22,12 @@ this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 Place - Suite 330, Boston, MA 02111-1307, USA.
 
 */
-
-import java.awt.*;
-import java.awt.image.*;
-import java.lang.*;
-import java.io.*;
-import java.applet.*;
-import java.net.*;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowListener;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentListener;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ItemEvent;
-import java.util.StringTokenizer;
-import java.util.Hashtable;
-import javax.sound.sampled.*;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.DirectColorModel;
+import java.awt.image.MemoryImageSource;
 
 /**
  * This is a completely frivolous emulation of the Game Boy Printer
@@ -82,6 +68,7 @@ class GameBoyPrinter extends GameLink {
 			this.i = i;
 		}
 
+		@Override
 		public void update(Graphics g) {
 			paint(g);
 		}
@@ -128,7 +115,7 @@ class GameBoyPrinter extends GameLink {
 		cpu.ioHandler.registers[0x02] &= 0x7F; // Turn of the send bit
 		cpu.triggerInterruptIfEnabled(cpu.INT_SER);
 
-		buffer[bufferFillPos++] = JavaBoy.unsign(b);
+		buffer[bufferFillPos++] = StaticFunctions.unsign(b);
 		if (bufferFillPos == BUFFER_SIZE) {
 			bufferFillPos = 0;
 		}
