@@ -1,23 +1,11 @@
 package core;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.lang.*;
-import java.io.*;
-import java.applet.*;
-import java.net.*;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowListener;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentListener;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
+import java.awt.Button;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ItemEvent;
-import java.util.StringTokenizer;
-import javax.sound.sampled.*;
+import java.awt.event.ActionListener;
 
 /**
  * This class implements a dialog box with some text and an OK button. It is
@@ -52,7 +40,7 @@ class ModalDialog implements ActionListener {
 		b.addActionListener(this);
 		dialog.add(b, "South");
 		dialog.setSize(350, 110);
-		dialog.show();
+		dialog.setVisible(true);
 
 		finished = false;
 
@@ -81,7 +69,7 @@ class ModalDialog implements ActionListener {
 		dialog.add(b);
 
 		dialog.setSize(350, 110);
-		dialog.show();
+		dialog.setVisible(true);
 
 		finished = false;
 
@@ -95,6 +83,7 @@ class ModalDialog implements ActionListener {
 		return finished;
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		result = !e.getActionCommand().equals("No");
 		if (yesNo) {
@@ -105,7 +94,7 @@ class ModalDialog implements ActionListener {
 			}
 		}
 
-		dialog.hide();
+		dialog.setVisible(false);
 		dialog = null;
 		finished = true;
 	}

@@ -1,35 +1,28 @@
 package core;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.lang.*;
-import java.io.*;
-import java.applet.*;
-import java.net.*;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowListener;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentListener;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
+import java.awt.Button;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ItemEvent;
-import java.util.StringTokenizer;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.Hashtable;
-import javax.sound.sampled.*;
 
 public class DefineControls extends Frame implements KeyListener, WindowListener, ActionListener {
 
 	TextField[] controlsField = new TextField[8];
 
-	Hashtable keyNames;
+	Hashtable<Integer, String> keyNames;
 
 	public DefineControls() {
 		super("Define Controls");
 
-		keyNames = new Hashtable();
+		keyNames = new Hashtable<>();
 		keyNames.put(new Integer(38), "Up arrow");
 		keyNames.put(new Integer(40), "Down arrow");
 		keyNames.put(new Integer(37), "Left arrow");
@@ -79,7 +72,7 @@ public class DefineControls extends Frame implements KeyListener, WindowListener
 		setSize(230, 300);
 		setResizable(false);
 		addWindowListener(this);
-		show();
+		setVisible(true);
 	}
 
 	public String getKeyDesc(int code, char c) {
@@ -98,9 +91,11 @@ public class DefineControls extends Frame implements KeyListener, WindowListener
 		return t;
 	}
 
+	@Override
 	public void keyPressed(KeyEvent e) {
 	}
 
+	@Override
 	public void keyReleased(KeyEvent e) {
 		System.out.println(e.getKeyCode() + ", " + e.getKeyChar());
 
@@ -112,34 +107,43 @@ public class DefineControls extends Frame implements KeyListener, WindowListener
 		}
 	}
 
+	@Override
 	public void keyTyped(KeyEvent e) {
 
 	}
 
+	@Override
 	public void windowClosed(WindowEvent e) {
 	}
 
+	@Override
 	public void windowClosing(WindowEvent e) {
-		hide();
+		setVisible(false);
 	}
 
+	@Override
 	public void windowOpened(WindowEvent e) {
 	}
 
+	@Override
 	public void windowIconified(WindowEvent e) {
 	}
 
+	@Override
 	public void windowDeiconified(WindowEvent e) {
 	}
 
+	@Override
 	public void windowActivated(WindowEvent e) {
 	}
 
+	@Override
 	public void windowDeactivated(WindowEvent e) {
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
-		hide();
+		setVisible(false);
 	}
 
 }

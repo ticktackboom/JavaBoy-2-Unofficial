@@ -1,24 +1,20 @@
 package core;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.lang.*;
-import java.io.*;
-import java.applet.*;
-import java.net.*;
+import java.applet.Applet;
+import java.awt.Component;
+import java.awt.Frame;
+import java.awt.Label;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Calendar;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowListener;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentListener;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ItemEvent;
-import java.util.StringTokenizer;
-import javax.sound.sampled.*;
 
 /**
  * This class represents the game cartridge and contains methods to load the ROM
@@ -887,13 +883,13 @@ class WebSaveRAM implements Runnable {
 			if (save) {
 				f.add(new Label("Please wait, saving"), "North");
 				f.add(new Label("game data to web server..."), "Center");
-				f.show();
+				f.setVisible(true);
 				saveRam();
 				// new ModalDialog(null, "Sucess!", "Game data", "Saved ok.");
 			} else {
 				f.add(new Label("Please wait, loading"), "North");
 				f.add(new Label("game data from web server..."), "Center");
-				f.show();
+				f.setVisible(true);
 				loadRam();
 				// new ModalDialog(null, "Success!", "Game data", "loaded ok.");
 			}
@@ -906,7 +902,7 @@ class WebSaveRAM implements Runnable {
 			// new ModalDialog(null, "Error!", "Load/Save error! Report to site
 			// administrator.", e.toString());
 		}
-		f.hide();
+		f.setVisible(false);
 	}
 
 	public void saveRam() throws Exception {
@@ -922,7 +918,7 @@ class WebSaveRAM implements Runnable {
 		System.out.println("Params: (" + url + ") " + params);
 
 		url = new URL(url.getProtocol(), url.getHost(), url.getPort(),
-				url.getFile() + "?user=" + URLEncoder.encode(username));
+				url.getFile() + "?user=" + URLEncoder.encode(username, "UTF-8"));
 
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -943,8 +939,8 @@ class WebSaveRAM implements Runnable {
 		}
 		// saveData = URLEncoder.encode("Hel\0lo");
 
-		String content = "romname=" + URLEncoder.encode(cart.getRomFilename()) + "&gamename="
-				+ URLEncoder.encode(cart.getCartName()) + "&user=" + URLEncoder.encode(username) + "&datalength="
+		String content = "romname=" + URLEncoder.encode(cart.getRomFilename(), "UTF-8") + "&gamename="
+				+ URLEncoder.encode(cart.getCartName(), "UTF-8") + "&user=" + URLEncoder.encode(username, "UTF-8") + "&datalength="
 				+ (cart.getBatteryRamSize() * 2) + "&data0=" + saveData + params;
 
 		System.out.println(content);
@@ -977,7 +973,7 @@ class WebSaveRAM implements Runnable {
 		System.out.println("Params: (" + url + ") " + params);
 
 		url = new URL(url.getProtocol(), url.getHost(), url.getPort(),
-				url.getFile() + "?user=" + URLEncoder.encode(username) + params);
+				url.getFile() + "?user=" + URLEncoder.encode(username, "UTF-8") + params);
 
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -990,8 +986,8 @@ class WebSaveRAM implements Runnable {
 
 		DataOutputStream printout = new DataOutputStream(conn.getOutputStream());
 
-		String content = "gamename=" + URLEncoder.encode(cart.getCartName()) + "&romname="
-				+ URLEncoder.encode(cart.getRomFilename());
+		String content = "gamename=" + URLEncoder.encode(cart.getCartName(), "UTF-8") + "&romname="
+				+ URLEncoder.encode(cart.getRomFilename(), "UTF-8");
 
 		// System.out.println(content);
 

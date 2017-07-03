@@ -51,6 +51,7 @@ class GameBoyPrinter extends GameLink {
 			paint(g);
 		}
 
+		@Override
 		public void paint(Graphics g) {
 			g.setColor(new Color(255, 0, 255));
 			g.drawImage(i, 0, 0, IMAGE_WIDTH * 2, IMAGE_HEIGHT * 2, null);
@@ -61,7 +62,7 @@ class GameBoyPrinter extends GameLink {
 	GameBoyPrinter() {
 		window = new GameBoyPrinterWindow("Game Boy Printer");
 
-		window.show();
+		window.setVisible(true);
 
 		bufferFillPos = 0;
 		bufferEmptyPos = 0;
@@ -83,10 +84,12 @@ class GameBoyPrinter extends GameLink {
 		tileY = 1;
 	}
 
+	@Override
 	void setDmgcpu(Dmgcpu d) {
 		cpu = d;
 	}
 
+	@Override
 	void send(byte b) {
 		System.out.print(b + " ");
 		cpu.ioHandler.registers[0x01] = 0x00; // Acknowledge the byte by sending a zero
@@ -204,8 +207,9 @@ class GameBoyPrinter extends GameLink {
 
 	}
 
+	@Override
 	void shutDown() {
-		window.hide();
+		window.setVisible(false);
 	}
 
 };

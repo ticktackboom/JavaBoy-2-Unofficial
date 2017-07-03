@@ -1,23 +1,11 @@
 package core;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.lang.*;
-import java.io.*;
-import java.applet.*;
-import java.net.*;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowListener;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentListener;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ItemEvent;
-import java.util.StringTokenizer;
-import javax.sound.sampled.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.DirectColorModel;
+import java.awt.image.MemoryImageSource;
 
 /**
  * This class is one implementation of the GraphicsChip. It performs the output
@@ -53,11 +41,13 @@ class TileBasedGraphicsChip extends GraphicsChip {
 	}
 
 	/** Reads data from the specified video RAM address */
+	@Override
 	public short addressRead(int addr) {
 		return videoRam[addr + vidRamStart];
 	}
 
 	/** Writes data to the specified video RAM address */
+	@Override
 	public void addressWrite(int addr, byte data) {
 		if (addr < 0x1800) { // Bkg Tile data area
 			tiles[(addr >> 4) + tileStart].invalidate();
@@ -71,6 +61,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 	 * Invalidates all tiles in the tile cache that have the given attributes. These
 	 * will be regenerated next time they are drawn.
 	 */
+	@Override
 	public void invalidateAll(int attribs) {
 		for (int r = 0; r < 384 * 2; r++) {
 			tiles[r].invalidate(attribs);
@@ -78,6 +69,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 	}
 
 	/** Invalidate all tiles in the tile cache */
+	@Override
 	public void invalidateAll() {
 		for (int r = 0; r < 384 * 2; r++) {
 			tiles[r].invalidate();
@@ -85,6 +77,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 	}
 
 	/** Set the size of the Gameboy window. */
+	@Override
 	public void setMagnify(int m) {
 		super.setMagnify(m);
 		for (int r = 0; r < 384 * 2; r++) {

@@ -1,24 +1,25 @@
 package core;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.lang.*;
-import java.io.*;
-import java.applet.*;
-import java.net.*;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowListener;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentListener;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
+import java.awt.Button;
+import java.awt.CheckboxMenuItem;
+import java.awt.Color;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Label;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.Panel;
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.ItemEvent;
-import java.util.StringTokenizer;
-import java.util.Hashtable;
-import javax.sound.sampled.*;
+import java.awt.event.ItemListener;
 
 /**
  * This class is used when JavaBoy is run as an application to provide the user
@@ -301,7 +302,7 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 
 		connectDialog.setSize(350, 125);
 		connectDialog.setResizable(false);
-		connectDialog.show();
+		connectDialog.setVisible(true);
 	}
 
 	/**
@@ -324,18 +325,22 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 		g.fillRect(0, 0, d.width, d.height);
 	}
 
+	@Override
 	public void componentHidden(ComponentEvent e) {
 
 	}
 
+	@Override
 	public void componentMoved(ComponentEvent e) {
 
 	}
 
+	@Override
 	public void componentResized(ComponentEvent e) {
 		clearWindow();
 	}
 
+	@Override
 	public void componentShown(ComponentEvent e) {
 
 	}
@@ -421,6 +426,8 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 		}
 	}
 
+
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();
 		// System.out.println("Command: " + command);
@@ -439,7 +446,7 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 			}
 
 			FileDialog fd = new FileDialog(this, "Open ROM");
-			fd.show();
+			fd.setVisible(true);
 
 			if (fd.getFile() != null) {
 				applet.cartridge = new Cartridge(fd.getDirectory() + fd.getFile(), this);
@@ -479,7 +486,7 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 		} else if (command.equals("Execute script")) {
 			if (applet.dmgcpu != null) {
 				FileDialog fd = new FileDialog(this, "Execute debugger script");
-				fd.show();
+				fd.setVisible(true);
 				applet.queueDebuggerCommand("c " + fd.getDirectory() + fd.getFile());
 				applet.dmgcpu.terminate = true;
 			} else {
@@ -511,10 +518,10 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 		} else if (command.equals("Connect to client")) {
 			makeConnectDialog();
 		} else if (command.equals("Connect cancel")) {
-			connectDialog.hide();
+			connectDialog.setVisible(false);
 			connectDialog = null;
 		} else if (command.equals("Connect ok")) {
-			connectDialog.hide();
+			connectDialog.setVisible(false);
 			connectDialog = null;
 			applet.gameLink = new TCPGameLink(this, hostAddress.getText());
 			if (applet.dmgcpu != null) {
@@ -554,6 +561,7 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 		}
 	}
 
+	@Override
 	public void itemStateChanged(ItemEvent e) {
 		String command = (String) e.getItem();
 		System.out.println(command);
@@ -710,6 +718,7 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 
 	}
 
+	@Override
 	public void paint(Graphics g) {
 		if (graphicsChip != null) {
 			Dimension d = getSize();

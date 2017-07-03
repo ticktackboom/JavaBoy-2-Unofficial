@@ -9,7 +9,6 @@ import java.util.prefs.Preferences;
 import org.ini4j.Ini;
 import org.ini4j.IniPreferences;
 
-import core.JavaBoy;
 import javafx.fxml.Initializable;
 
 public class GameBoyScreenController implements Initializable {
