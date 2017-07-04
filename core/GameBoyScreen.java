@@ -465,6 +465,14 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 				applet.dmgcpu.allowGbcFeatures = fileGameboyColor.getState();
 				applet.dmgcpu.reset();
 				
+				/*
+				 * Con las siguientes lineas, inicio el juego nada más seleccionarlo.
+				 * 
+				 * Odio las esperas :)
+				 */
+				
+				applet.queueDebuggerCommand("s;g");
+				applet.dmgcpu.terminate = true;
 
 			}
 
