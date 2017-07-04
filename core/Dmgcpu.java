@@ -89,7 +89,7 @@ class Dmgcpu {
 	// 256 bytes at top of RAM are used mainly for registers
 	byte[] oam = new byte[0x100];
 
-	Cartridge cartridge;
+	Cartucho cartridge;
 	GraphicsChip graphicsChip;
 	SoundChip soundChip;
 	GameLink gameLink;
@@ -106,7 +106,7 @@ class Dmgcpu {
 	 * Create a CPU emulator with the supplied cartridge and game link objects. Both
 	 * can be set up or changed later if needed
 	 */
-	public Dmgcpu(Cartridge c, GameLink l, Component a) {
+	public Dmgcpu(Cartucho c, GameLink l, Component a) {
 		cartridge = c;
 		gameLink = l;
 		if (gameLink != null)
@@ -214,23 +214,6 @@ class Dmgcpu {
 	 */
 	public final void addressWrite(int addr, int data) {
 
-		/*
-		 * if ((addr >= 0xCFF8) && (addr <= 0xCFF8) && (running)) {
-		 * System.out.println(StaticFunctions.hexWord(data) + " written to " +
-		 * StaticFunctions.hexWord(addr) + " at " + StaticFunctions.hexWord(pc) +
-		 * " bank " + cartridge.currentBank); } if ((addr >= 0xEFF8) && (addr <= 0xEFF8)
-		 * && (running)) { System.out.println(StaticFunctions.hexWord(data) +
-		 * " written to " + StaticFunctions.hexWord(addr) + " at " +
-		 * StaticFunctions.hexWord(pc) + " bank " + cartridge.currentBank); }
-		 */
-
-		/*
-		 * if ((addr < 0) || (addr > 65535)) {
-		 * System.out.println(StaticFunctions.hexWord(data) + " written to " +
-		 * StaticFunctions.hexWord(addr) + " at " + StaticFunctions.hexWord(pc) +
-		 * " bank " + cartridge.currentBank); }
-		 */
-
 		switch (addr & 0xF000) {
 		case 0x0000:
 		case 0x1000:
@@ -240,13 +223,13 @@ class Dmgcpu {
 		case 0x5000:
 		case 0x6000:
 		case 0x7000:
-			if (!running) {
+			if (!running)
 				cartridge.debuggerAddressWrite(addr, data);
-			} else {
+			else {
 				cartridge.addressWrite(addr, data);
 				// System.out.println("Tried to write to ROM! PC = " +
-				// StaticFunctions.hexWord(pc) + ",
-				// Data = " + StaticFunctions.hexByte(StaticFunctions.unsign((byte) data)));
+				// StaticFunctions.hexWord(pc) +
+				// ", Data = " + StaticFunctions.hexByte(StaticFunctions.unsign((byte) data)));
 			}
 			break;
 
@@ -291,15 +274,6 @@ class Dmgcpu {
 
 	public final void addressWriteOld(int addr, int data) {
 
-		/*
-		 * if ((addr >= 0xFFA4) && (addr <= 0xFFA5) && (running)) {
-		 * System.out.println(StaticFunctions.hexWord(addr) + " written at " +
-		 * StaticFunctions.hexWord(pc) + " bank " + cartridge.currentBank); }
-		 */
-
-		// System.out.print(StaticFunctions.hexByte(StaticFunctions.unsign((short)
-		// data)) + " --> " +
-		// StaticFunctions.hexWord(addr) + ", ");
 		if ((addr < 0x8000)) {
 			if (!running) {
 				cartridge.debuggerAddressWrite(addr, data);
@@ -328,13 +302,7 @@ class Dmgcpu {
 		} else if (addr < 0xFF00) {
 			oam[addr - 0xFE00] = (byte) data;
 		} else if (addr <= 0xFFFF) {
-			if (addr == 0xFF80) {
-				// System.out.println("Register write: " + StaticFunctions.hexWord(addr) + " = "
-				// +
-				// StaticFunctions.hexWord(data));
-			}
 			ioHandler.ioWrite(addr - 0xFF00, (short) data);
-			// registers[addr - 0xFF00] = (byte) data;
 		} else {
 			System.out.println("Attempt to write to address " + StaticFunctions.hexWord(addr));
 		}
@@ -456,9 +424,8 @@ class Dmgcpu {
 
 	/** Resets the CPU to it's power on state. Memory contents are not cleared. */
 	public void reset() {
-
 		checkEnableGbc();
-		setDoubleSpeedCpu(false);
+		setDoubleSpeedCpu(true);
 		graphicsChip.dispose();
 		cartridge.reset();
 		interruptsEnabled = false;
@@ -469,27 +436,24 @@ class Dmgcpu {
 		gbcRamBank = 1;
 		instrCount = 0;
 
-		if (gbcFeatures) {
+		if (gbcFeatures) 
 			a = 0x11;
-		} else {
+		 else 
 			a = 0x01;
-		}
+		
 
-		for (int r = 0; r < 0x8000; r++) {
+		for (int r = 0; r < 0x8000; r++) 
 			mainRam[r] = 0;
-		}
-
+		
 		setBC(0x0013);
 		setDE(0x00D8);
 		setHL(0x014D);
 		StaticFunctions.debugLog("CPU reset");
 
 		ioHandler.reset();
-		// pc = 0x0100;
 	}
 
 	public void setDoubleSpeedCpu(boolean enabled) {
-
 		if (enabled) {
 			INSTRS_PER_HBLANK = BASE_INSTRS_PER_HBLANK * 2;
 			INSTRS_PER_DIV = BASE_INSTRS_PER_DIV * 2;
@@ -497,7 +461,6 @@ class Dmgcpu {
 			INSTRS_PER_HBLANK = BASE_INSTRS_PER_HBLANK;
 			INSTRS_PER_DIV = BASE_INSTRS_PER_DIV;
 		}
-
 	}
 
 	/**
@@ -608,7 +571,7 @@ class Dmgcpu {
 				}
 
 				boolean speedThrottle = true;
-				if (!JavaBoy.runningAsApplet) {
+				if (!JavaBoyNeo.runningAsApplet) {
 					GameBoyScreen g = (GameBoyScreen) applet;
 					speedThrottle = g.viewSpeedThrottle.getState();
 				}
@@ -635,8 +598,8 @@ class Dmgcpu {
 				if (soundChip != null)
 					soundChip.outputSound();
 				graphicsChip.frameDone = false;
-				if (JavaBoy.runningAsApplet) {
-					((JavaBoy) (applet)).drawNextFrame();
+				if (JavaBoyNeo.runningAsApplet) {
+					((JavaBoyNeo) (applet)).drawNextFrame();
 				} else {
 					((GameBoyScreen) (applet)).repaint();
 				}
@@ -648,7 +611,6 @@ class Dmgcpu {
 					// Nothing.
 				}
 
-				// System.out.println("LCDC reset");
 			}
 		}
 	}

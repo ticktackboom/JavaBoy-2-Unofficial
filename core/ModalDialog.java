@@ -49,9 +49,9 @@ class ModalDialog implements ActionListener {
 	public ModalDialog(Frame parent, String title, String text, DialogListener listener) {
 		this.yesNo = true;
 		this.listener = listener;
-		if (parent == null) {
+		
+		if (parent == null)
 			System.out.println(text);
-		}
 
 		dialog = new Frame(title);
 		dialog.setLayout(new GridLayout(3, 1));
@@ -87,11 +87,11 @@ class ModalDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		result = !e.getActionCommand().equals("No");
 		if (yesNo) {
-			if (result) {
+			if (result)
 				listener.yesPressed();
-			} else {
+			else
 				listener.noPressed();
-			}
+
 		}
 
 		dialog.setVisible(false);

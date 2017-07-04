@@ -308,59 +308,6 @@ class TileBasedGraphicsChip extends GraphicsChip {
 		}
 		Graphics back = backBuffer.getGraphics();
 
-		/*
-		 * g.setColor(new Color(255,0,0)); g.drawRect(5,5, 10, 10);
-		 */
-		// System.out.println("- Drawing");
-		// for (int r = 0; r < 384; r++) {
-		// if (!spriteTiles[r].valid) System.out.println("Generating image for tile " +
-		// r);
-		// tiles[r].validate(videoRam, r << 4, backgroundPalette, TILE_BKG);
-		// }
-
-		/*
-		 * for (int r = 0; r < 20; r++) { bgTiles[r].draw(g, 8 * r, 0); }
-		 */
-
-		// drawSprites(back, 1);
-
-		// Draw bg layer
-		/*
-		 * int xTileOfs = StaticFunctions.unsign(dmgcpu.ioHandler.registers[0x43]) / 8;
-		 * int yTileOfs = StaticFunctions.unsign(dmgcpu.ioHandler.registers[0x42]) / 8;
-		 * int xPixelOfs = StaticFunctions.unsign(dmgcpu.ioHandler.registers[0x43]) % 8;
-		 * int yPixelOfs = StaticFunctions.unsign(dmgcpu.ioHandler.registers[0x42]) % 8;
-		 * 
-		 * int bgStartAddress; if (hiBgTileMapAddress) { bgStartAddress = 0x1C00; /*
-		 * 1C00 } else { bgStartAddress = 0x1800; }
-		 * 
-		 * int tileAddress = 0; int attribs = 0;
-		 * 
-		 * 
-		 * for (int y = 0; y < 19; y++) { for (int x = 0; x < 21; x++) { int
-		 * attributeData = 0;
-		 * 
-		 * 
-		 * tileAddress = bgStartAddress + (((y + yTileOfs) % 32) * 32) + ((x + xTileOfs)
-		 * % 32); attributeData = StaticFunctions.unsign(videoRam[tileAddress +
-		 * 0x2000]);
-		 * 
-		 * if (bgWindowDataSelect) { tileNum =
-		 * StaticFunctions.unsign(videoRam[tileAddress]); } else { tileNum = 256 +
-		 * videoRam[tileAddress]; }
-		 * 
-		 * if (dmgcpu.gbcFeatures) { attribs = (attributeData & 0x07) << 2;
-		 * 
-		 * if ((attributeData & 0x20) != 0) { attribs |= TILE_FLIPX; } if
-		 * ((attributeData & 0x40) != 0) { attribs |= TILE_FLIPY; }
-		 * 
-		 * } else { attribs = TILE_BKG; }
-		 * 
-		 * if (tiles[tileNum + tileStart].invalid(attribs)) { tiles[tileNum +
-		 * tileStart].validate(videoRam, tileNum << 4 + vidMemStart, attribs); }
-		 * tiles[tileNum + tileStart]. draw(back, (8 * x) - xPixelOfs, (8 * y) -
-		 * yPixelOfs, attribs); } }
-		 */
 
 		/* Draw window */
 		if (winEnabled) {

@@ -25,13 +25,24 @@ import java.util.Calendar;
  * (this is very rare).
  */
 
-class Cartridge {
+class Cartucho {
 	/**
 	 * Translation between ROM size byte contained in the ROM header, and the number
 	 * of 16Kb ROM banks the cartridge will contain
 	 */
-	final int[][] romSizeTable = { { 0, 2 }, { 1, 4 }, { 2, 8 }, { 3, 16 }, { 4, 32 }, { 5, 64 }, { 6, 128 },
-			{ 7, 256 }, { 0x52, 72 }, { 0x53, 80 }, { 0x54, 96 } };
+	final int[][] romSizeTable = {
+			{ 0, 2 },
+			{ 1, 4 },
+			{ 2, 8 },
+			{ 3, 16 },
+			{ 4, 32 },
+			{ 5, 64 },
+			{ 6, 128 },
+			{ 7, 256 },
+			{ 0x52, 72 },
+			{ 0x53, 80 },
+			{ 0x54, 96 }
+	};
 
 	/**
 	 * Contains strings of the standard names of the cartridge mapper chips, indexed
@@ -136,16 +147,11 @@ class Cartridge {
 	 * the cartridge filename given. Loads via the web if JavaBoy is running as an
 	 * applet
 	 */
-	public Cartridge(String romFileName, Component a) {
+	public Cartucho(String romFileName, Component a) {
 		applet = a; /* 5823 */
 		this.romFileName = romFileName;
 		InputStream is = null;
 		try {
-			/*
-			 * if (JavaBoy.runningAsApplet) { Applet myApplet = (Applet) a; is = new
-			 * URL(myApplet.getDocumentBase(), romFileName).openStream(); } else { is = new
-			 * FileInputStream(new File(romFileName)); }
-			 */
 			is = openRom(romFileName, a);
 			byte[] firstBank = new byte[0x04000];
 
@@ -182,7 +188,7 @@ class Cartridge {
 				System.err.println("Invalid Checksum\n");
 			}
 
-			if (!JavaBoy.runningAsApplet) {
+			if (!JavaBoyNeo.runningAsApplet) {
 				loadBatteryRam();
 			}
 
@@ -217,7 +223,7 @@ class Cartridge {
 	}
 
 	public boolean needsResetEnable() {
-		// System.out.println("Reset !");
+		System.out.println("Reset !");
 		if (needsReset) {
 			needsReset = false;
 			System.out.println("Reset requested");
@@ -288,7 +294,7 @@ class Cartridge {
 		if (bFormat == bNotCompressed) {
 			try {
 				romIntFileName = stripExtention(romFileName);
-				if (JavaBoy.runningAsApplet) {
+				if (JavaBoyNeo.runningAsApplet) {
 					return new java.net.URL(((Applet) (a)).getDocumentBase(), romFileName).openStream();
 				} else {
 					return new FileInputStream(new File(romFileName));
@@ -307,7 +313,7 @@ class Cartridge {
 
 			try {
 
-				if (JavaBoy.runningAsApplet) {
+				if (JavaBoyNeo.runningAsApplet) {
 					zip = new java.util.zip.ZipInputStream(
 							new java.net.URL(((Applet) (a)).getDocumentBase(), romFileName).openStream());
 				} else {
@@ -329,13 +335,13 @@ class Cartridge {
 				}
 				// Show an error if no ROM file was found in the ZIP
 				if (!bFoundGBROM) {
-					if (JavaBoy.runningAsApplet) {
+					if (JavaBoyNeo.runningAsApplet) {
 						// new Dialog((Frame) a, "Error", "No GBx ROM found!", "");
 					}
 					System.err.println("No GBx ROM found!");
 					throw new java.io.IOException("ERROR");
 				}
-				if (!JavaBoy.runningAsApplet) {
+				if (!JavaBoyNeo.runningAsApplet) {
 					System.out.println("Found " + romName);
 				}
 				return zip;
@@ -349,7 +355,7 @@ class Cartridge {
 			System.out.println("Loading GZIP Compressed ROM");
 			romIntFileName = stripExtention(romFileName);
 			try {
-				if (JavaBoy.runningAsApplet) {
+				if (JavaBoyNeo.runningAsApplet) {
 					return new java.util.zip.GZIPInputStream(
 							new java.net.URL(((Applet) (a)).getDocumentBase(), romFileName).openStream());
 				} else {
@@ -753,7 +759,7 @@ class Cartridge {
 
 	/** Peforms saving of the battery RAM before the object is discarded */
 	public void dispose() {
-		if (!JavaBoy.runningAsApplet) {
+		if (!JavaBoyNeo.runningAsApplet) {
 			saveBatteryRam();
 		}
 		disposed = true;
@@ -838,13 +844,13 @@ class NoSaveDataException extends java.lang.Exception {
 }
 
 class WebSaveRAM implements Runnable {
-	Cartridge cart;
+	Cartucho cart;
 	boolean save;
 	URL url;
 	Dmgcpu cpu;
 	String username;
 
-	public WebSaveRAM(URL url, boolean save, Cartridge cart, Dmgcpu cpu, String username) {
+	public WebSaveRAM(URL url, boolean save, Cartucho cart, Dmgcpu cpu, String username) {
 		this.url = url;
 		this.save = save;
 		this.cart = cart;

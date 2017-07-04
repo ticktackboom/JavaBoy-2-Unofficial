@@ -60,17 +60,12 @@ class GameboyPalette {
 		}
 
 		int red = (gbcData[entryNo] & 0x001F) << 3;
-
 		int green = (gbcData[entryNo] & 0x03E0) >> 2;
-
 		int blue = (gbcData[entryNo] & 0x7C00) >> 7;
 
 		data[0] = 0;
-
 		data[1] = 1;
-
 		data[2] = 2;
-
 		data[3] = 3;
 
 		Color c = new Color(red, green, blue);

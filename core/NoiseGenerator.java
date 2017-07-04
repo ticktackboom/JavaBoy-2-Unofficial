@@ -152,7 +152,6 @@ class NoiseGenerator {
 	 * indicated in the output array.
 	 */
 	public void play(byte[] b, int length, int offset) {
-		int val;
 
 		if (totalLength != 0) {
 			totalLength--;
@@ -187,19 +186,6 @@ class NoiseGenerator {
 				cyclePos = (cyclePos + step) % cycleLength;
 			}
 
-			/*
-			 * for (int r = offset; r < offset + length; r++) { val = (int) ((Math.random()
-			 * * amplitude * 2) - amplitude);
-			 * 
-			 * if ((channel & CHAN_LEFT) != 0) b[r * 2] += val; if ((channel & CHAN_RIGHT)
-			 * != 0) b[r * 2 + 1] += val; if ((channel & CHAN_MONO) != 0) b[r] += val;
-			 * 
-			 * // System.out.print(val + " ");
-			 * 
-			 * cyclePos = (cyclePos + 256) % cycleLength;
-			 * 
-			 * }
-			 */
 		}
 	}
 

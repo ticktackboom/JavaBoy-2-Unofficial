@@ -11,6 +11,10 @@ import java.awt.Image;
  */
 
 abstract class GraphicsChip {
+	/** GameBoy resolution */
+	static final int SCREEN_WIDTH = 160;
+	static final int SCREEN_HEIGHT = 144;
+	
 	/** Tile uses the background palette */
 	static final int TILE_BKG = 0;
 
@@ -59,8 +63,8 @@ abstract class GraphicsChip {
 
 	/** Image magnification */
 	int mag = 2;
-	int width = 160 * mag;
-	int height = 144 * mag;
+	int width = SCREEN_WIDTH * mag;
+	int height = SCREEN_HEIGHT * mag;
 
 	/** Amount of time to wait between frames (ms) */
 	int frameWaitTime = 0;
@@ -96,7 +100,7 @@ abstract class GraphicsChip {
 			gbcSprite[r] = new GameboyPalette(0, 1, 2, 3);
 		}
 
-		backBuffer = a.createImage(160 * mag, 144 * mag);
+		backBuffer = a.createImage(SCREEN_WIDTH * mag, SCREEN_HEIGHT * mag);
 		applet = a;
 	}
 
@@ -104,11 +108,11 @@ abstract class GraphicsChip {
 
 	public void setMagnify(int m) {
 		mag = m;
-		width = m * 160;
-		height = m * 144;
+		width = m * SCREEN_WIDTH;
+		height = m * SCREEN_HEIGHT;
 		if (backBuffer != null)
 			backBuffer.flush();
-		backBuffer = applet.createImage(160 * mag, 144 * mag);
+		backBuffer = applet.createImage(SCREEN_WIDTH * mag, SCREEN_HEIGHT * mag);
 	}
 
 	/** Clear up any allocated memory */
@@ -118,20 +122,20 @@ abstract class GraphicsChip {
 
 	/** Calculate the number of frames per second for the current sampling period */
 	public void calculateFPS() {
-		if (startTime == 0) {
+		if (startTime == 0) 
 			startTime = System.currentTimeMillis();
-		}
+		
 		if (framesDrawn > 30) {
 			long delay = System.currentTimeMillis() - startTime;
 			averageFPS = (int) ((framesDrawn) / (delay / 1000f));
 			startTime = System.currentTimeMillis();
 			int timePerFrame;
 
-			if (averageFPS != 0) {
+			if (averageFPS != 0) 
 				timePerFrame = 1000 / averageFPS;
-			} else {
+			 else 
 				timePerFrame = 100;
-			}
+			
 			frameWaitTime = 17 - timePerFrame + frameWaitTime;
 			framesDrawn = 0;
 		}

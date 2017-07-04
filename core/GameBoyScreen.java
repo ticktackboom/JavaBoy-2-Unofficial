@@ -21,6 +21,8 @@ import java.awt.event.ComponentListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import javafx.GameBoyScreenController;
+
 /**
  * This class is used when JavaBoy is run as an application to provide the user
  * interface.
@@ -28,7 +30,7 @@ import java.awt.event.ItemListener;
 
 class GameBoyScreen extends Frame implements ActionListener, ComponentListener, ItemListener {
 	GraphicsChip graphicsChip = null;
-	JavaBoy applet;
+	JavaBoyNeo applet;
 
 	CheckboxMenuItem viewFrameCounter;
 	CheckboxMenuItem viewSpeedThrottle;
@@ -65,12 +67,13 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 	TextField hostAddress;
 	Dialog connectDialog;
 
-	CheckboxMenuItem[] schemes = new CheckboxMenuItem[JavaBoy.schemeNames.length];
+	CheckboxMenuItem[] schemes = new CheckboxMenuItem[JavaBoyNeo.schemeNames.length];
 
 	/** Creates the JavaBoy interface, with the specified title text */
-	public GameBoyScreen(String s, JavaBoy a) {
+	public GameBoyScreen(String s, JavaBoyNeo a) {
 		super(s);
 		applet = a;
+		// Default window size on open
 		setWindowSize(2);
 
 		this.addComponentListener(this);
@@ -235,8 +238,8 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 		viewMenu.add(viewSpeedThrottle);
 		viewMenu.add(new MenuItem("-"));
 
-		for (int r = 0; r < JavaBoy.schemeNames.length; r++) {
-			schemes[r] = new CheckboxMenuItem(JavaBoy.schemeNames[r]);
+		for (int r = 0; r < JavaBoyNeo.schemeNames.length; r++) {
+			schemes[r] = new CheckboxMenuItem(JavaBoyNeo.schemeNames[r]);
 			schemes[r].addItemListener(this);
 			viewMenu.add(schemes[r]);
 			if (r == 0)
@@ -426,7 +429,6 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 		}
 	}
 
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();
@@ -444,12 +446,12 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 				}
 				clearWindow();
 			}
-
+			
 			FileDialog fd = new FileDialog(this, "Open ROM");
 			fd.setVisible(true);
 
 			if (fd.getFile() != null) {
-				applet.cartridge = new Cartridge(fd.getDirectory() + fd.getFile(), this);
+				applet.cartridge = new Cartucho(fd.getDirectory() + fd.getFile(), this);
 				applet.dmgcpu = new Dmgcpu(applet.cartridge, applet.gameLink, this);
 				// applet.gameBoyPrinter = new GameBoyPrinter();
 				if (applet.gameLink != null)
@@ -462,13 +464,17 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 				setChannelEnable();
 				applet.dmgcpu.allowGbcFeatures = fileGameboyColor.getState();
 				applet.dmgcpu.reset();
+				
+
 			}
 
-		} else if (command.equals("Frame counter")) {
+		} else if (command.equals("Frame counter"))
 			viewFrameCounter.setState(!viewFrameCounter.getState());
-		} else if (command.equals("Speed throttle")) {
+
+		else if (command.equals("Speed throttle"))
 			viewSpeedThrottle.setState(!viewSpeedThrottle.getState());
-		} else if (command.equals("Emulate")) {
+
+		else if (command.equals("Emulate")) {
 			if ((applet.cartridge != null) && (applet.cartridge.cartridgeReady)) {
 				applet.queueDebuggerCommand("g");
 				applet.dmgcpu.terminate = true;
@@ -537,22 +543,25 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 	public void setColourScheme(String command) {
 		if (applet.dmgcpu == null) {
 			new ModalDialog(this, "Error", "Load a ROM before selecting", "a colour scheme.");
-			for (int r = 0; r < JavaBoy.schemeNames.length; r++) {
-				if (JavaBoy.schemeNames[r] == command) {
+			for (int r = 0; r < JavaBoyNeo.schemeNames.length; r++) {
+				if (JavaBoyNeo.schemeNames[r] == command) {
 					schemes[r].setState(false);
 				}
 			}
 		} else {
-			for (int r = 0; r < JavaBoy.schemeNames.length; r++) {
-				if (JavaBoy.schemeNames[r] == command) {
-					applet.dmgcpu.graphicsChip.backgroundPalette.setColours(JavaBoy.schemeColours[r][0],
-							JavaBoy.schemeColours[r][1], JavaBoy.schemeColours[r][2], JavaBoy.schemeColours[r][3]);
+			for (int r = 0; r < JavaBoyNeo.schemeNames.length; r++) {
+				if (JavaBoyNeo.schemeNames[r] == command) {
+					applet.dmgcpu.graphicsChip.backgroundPalette.setColours(JavaBoyNeo.schemeColours[r][0],
+							JavaBoyNeo.schemeColours[r][1], JavaBoyNeo.schemeColours[r][2],
+							JavaBoyNeo.schemeColours[r][3]);
 
-					applet.dmgcpu.graphicsChip.obj1Palette.setColours(JavaBoy.schemeColours[r][4],
-							JavaBoy.schemeColours[r][5], JavaBoy.schemeColours[r][6], JavaBoy.schemeColours[r][7]);
+					applet.dmgcpu.graphicsChip.obj1Palette.setColours(JavaBoyNeo.schemeColours[r][4],
+							JavaBoyNeo.schemeColours[r][5], JavaBoyNeo.schemeColours[r][6],
+							JavaBoyNeo.schemeColours[r][7]);
 
-					applet.dmgcpu.graphicsChip.obj2Palette.setColours(JavaBoy.schemeColours[r][8],
-							JavaBoy.schemeColours[r][9], JavaBoy.schemeColours[r][10], JavaBoy.schemeColours[r][11]);
+					applet.dmgcpu.graphicsChip.obj2Palette.setColours(JavaBoyNeo.schemeColours[r][8],
+							JavaBoyNeo.schemeColours[r][9], JavaBoyNeo.schemeColours[r][10],
+							JavaBoyNeo.schemeColours[r][11]);
 					applet.dmgcpu.graphicsChip.invalidateAll();
 				} else {
 					schemes[r].setState(false);
@@ -729,7 +738,7 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 				g.setColor(new Color(255, 255, 255));
 				g.fillRect(0, d.height - 20, d.width, 20);
 				g.setColor(new Color(0, 0, 0));
-				g.drawString(graphicsChip.getFPS() + " frames per second", 10, d.height - 7);
+				g.drawString(graphicsChip.getFPS() + " FPS", 10, d.height - 7);
 			}
 		}
 	}

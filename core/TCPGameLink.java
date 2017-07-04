@@ -68,11 +68,13 @@ class TCPGameLink extends GameLink implements Runnable {
 	}
 
 	/** Set the CPU that is using the Game Link connection */
+	@Override
 	public void setDmgcpu(Dmgcpu d) {
 		dmgcpu = d;
 	}
 
 	/** Stop the Game Link server/client connection */
+	@Override
 	public void shutDown() {
 		terminate = true;
 		try {
@@ -196,10 +198,8 @@ class TCPGameLink extends GameLink implements Runnable {
 			outStream.write(b);
 			outStream.flush();
 
-			// System.out.println("--> " + JavaBoy.unsign(b) + ":" +
-			// JavaBoy.unsign(dmgcpu.ioHandler.registers[0x02]));
 			try {
-				java.lang.Thread.sleep(10);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
 
 			}

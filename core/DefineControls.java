@@ -61,7 +61,7 @@ public class DefineControls extends Frame implements KeyListener, WindowListener
 
 		for (int r = 0; r < 8; r++) {
 			controlsField[r].setText(
-					getKeyDesc(JavaBoy.keyCodes[r], (char) JavaBoy.keyCodes[r]) + " (" + JavaBoy.keyCodes[r] + ")");
+					getKeyDesc(JavaBoyNeo.keyCodes[r], (char) JavaBoyNeo.keyCodes[r]) + " (" + JavaBoyNeo.keyCodes[r] + ")");
 		}
 
 		Button cancel = new Button("Close");
@@ -102,7 +102,7 @@ public class DefineControls extends Frame implements KeyListener, WindowListener
 		for (int r = 0; r < 8; r++) {
 			if (e.getSource() == controlsField[r]) {
 				controlsField[r].setText(getKeyDesc(e.getKeyCode(), e.getKeyChar()) + " (" + e.getKeyCode() + ")");
-				JavaBoy.keyCodes[r] = e.getKeyCode();
+				JavaBoyNeo.keyCodes[r] = e.getKeyCode();
 			}
 		}
 	}

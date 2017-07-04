@@ -28,6 +28,8 @@ public class StaticFunctions {
 		System.out.println("q                     Quit debugger interface");
 		System.out.println("<CTRL> + C            Quit JavaBoy");
 	}
+	
+	
 
 	/** Returns a string representation of an 16-bit number in hexadecimal */
 	static public String hexWord(int w) {
@@ -39,18 +41,25 @@ public class StaticFunctions {
 		System.out.println("Debug: " + s);
 	}
 
-	/** Returns the unsigned value (0 - 255) of a signed byte */
+	/**
+	 * Returns the unsigned value (0 - 255) of a signed byte.
+	 * 
+	 * Java doesn't have unsigned types for data store, so, we need a function to
+	 * make the conversion from an unsigned number to the signed representation.
+	 */
 	static public short unsign(byte b) {
-		if (b < 0) {
-			return (short) (256 + b);
-		} else {
-			return b;
-		}
+		return (short) (b & 0xFF);
 	}
 
 	/**
 	 * Returns the unsigned value (0 - 255) of a signed 8-bit value stored in a
-	 * short
+	 * short.
+	 * 
+	 * Problem detected: Java doesn't detect error when overflow, so, values lower
+	 * and higher of a byte value will produce signed results.
+	 * 
+	 * But this function will never be called with an overflow value, because all
+	 * data parsed came from gameboy.
 	 */
 	static public short unsign(short b) {
 		if (b < 0) {
@@ -59,7 +68,7 @@ public class StaticFunctions {
 			return b;
 		}
 	}
-
+	
 	/** Returns a string representation of an 8-bit number in hexadecimal */
 	static public String hexByte(int b) {
 		String s = new Character(hexChars.charAt(b >> 4)).toString();

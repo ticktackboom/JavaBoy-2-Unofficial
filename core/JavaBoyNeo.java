@@ -99,10 +99,8 @@ import java.util.StringTokenizer;
  * implements a full command based debugger using the console.
  */
 
-public class JavaBoy extends java.applet.Applet
+public class JavaBoyNeo extends java.applet.Applet
 		implements Runnable, KeyListener, WindowListener, MouseListener, ActionListener, ItemListener {
-	private final int WIDTH = 160;
-	private final int HEIGHT = 144;
 	private final String WEBSITE_URL = "http://www.millstone.demon.co.uk/download/javaboy";
 
 	/** The version string is displayed on the title bar of the application */
@@ -141,7 +139,7 @@ public class JavaBoy extends java.applet.Applet
 					0xFF80FFFF, 0xFF00C0C0, 0xFF008080, 0xFF004000 } };
 
 	/** When emulation running, references the currently loaded cartridge */
-	Cartridge cartridge;
+	Cartucho cartridge;
 
 	/** When emulation running, references the current CPU object */
 	Dmgcpu dmgcpu;
@@ -197,7 +195,14 @@ public class JavaBoy extends java.applet.Applet
 
 	Image doubleBuffer;
 
-	static int[] keyCodes = { 38, 40, 37, 39, 90, 88, 10, 8 };
+	/*
+	 * Key Order:
+	 * 
+	 * UP, DOWN, LEFT, RIGHT, A, B, SELECT, START
+	 * 
+	 * Default will be: up, down, left, right, x, z, a, s
+	 */
+	static int[] keyCodes = { 38, 40, 37, 39, 88, 90, 83, 65 };
 
 	boolean keyListener = false;
 
@@ -224,19 +229,7 @@ public class JavaBoy extends java.applet.Applet
 			int y = getSize().height / 2 - dmgcpu.graphicsChip.getHeight() / 2;
 
 			if ((stripTimer > stripLength) && (!fullFrame) && (!imageSizeChanged)) {
-				/*
-				 * if ((imageSizeChanged) || (fullFrame)) { if
-				 * (dmgcpu.graphicsChip.isFrameReady()) { g.setColor(new Color((int)
-				 * (Math.random() * 255), (int) (Math.random() * 255), (int) (Math.random() *
-				 * 255))); g.fillRect(0, 0, getSize().width, getSize().height); imageSizeChanged
-				 * = false; if (fullFrame) { System.out.println("fullframe is " + fullFrame +
-				 * " at "+ System.currentTimeMillis()); }
-				 * 
-				 * } }
-				 */
-
 				dmgcpu.graphicsChip.draw(g, x, y, this);
-
 			} else {
 				Graphics bufferGraphics = doubleBuffer.getGraphics();
 
@@ -420,17 +413,16 @@ public class JavaBoy extends java.applet.Applet
 	public void update(Graphics g) {
 		paint(g);
 		fullFrame = true;
-		// System.out.println("fullframe true");
 	}
 
 	public void drawNextFrame() {
-		// System.out.println("fullframe false");
 		fullFrame = false;
 		repaint();
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
+		System.out.println("KEY PRESSED");
 	}
 
 	@Override
@@ -478,7 +470,6 @@ public class JavaBoy extends java.applet.Applet
 			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
 			// }
 		}
-
 		switch (key) {
 		case KeyEvent.VK_F1:
 			if (dmgcpu.graphicsChip.frameSkip != 1)
@@ -557,9 +548,7 @@ public class JavaBoy extends java.applet.Applet
 
 		System.out.println("Number of memory locations before reduce: " + memorySearchMap.size());
 
-		Iterator entries = memorySearchMap.entrySet().iterator();
-		while (entries.hasNext()) {
-			Map.Entry entry = (Map.Entry) entries.next();
+		for (Map.Entry<Integer, Short> entry : memorySearchMap.entrySet()) {
 			int key = (Integer) entry.getKey();
 			short value = (Short) entry.getValue();
 
@@ -567,32 +556,31 @@ public class JavaBoy extends java.applet.Applet
 					: dmgcpu.addressRead(key);
 
 			if (condition.equals("c")) { // changed
-				if (value == currentValue) {
-					entries.remove();
-				} else {
+				if (value == currentValue)
+					memorySearchMap.remove(key);
+				else
 					memorySearchMap.put(key, currentValue);
-				}
+
 			} else if (condition.equals("s")) { // unchanged
-				if (value != currentValue) {
-					entries.remove();
-				}
+				if (value != currentValue)
+					memorySearchMap.remove(key);
+
 			} else if (condition.equals("g")) { // greater
-				if (value > currentValue) {
-					entries.remove();
-				} else {
+				if (value > currentValue)
+					memorySearchMap.remove(key);
+				else
 					memorySearchMap.put(key, currentValue);
-				}
 
 			} else if (condition.equals("l")) { // lesser
-				if (value < currentValue) {
-					entries.remove();
-				} else {
+				if (value < currentValue)
+					memorySearchMap.remove(key);
+				else
 					memorySearchMap.put(key, currentValue);
-				}
+
 			} else if (condition.equals("e")) { // equal
-				if (Integer.valueOf(parameter, 16) != currentValue) {
-					entries.remove();
-				}
+				if (Integer.valueOf(parameter, 16) != currentValue)
+					memorySearchMap.remove(key);
+
 			}
 
 		}
@@ -602,9 +590,7 @@ public class JavaBoy extends java.applet.Applet
 	public void displayMemorySearch() {
 		System.out.println("Number of memory locations found: " + memorySearchMap.size());
 
-		Iterator entries = memorySearchMap.entrySet().iterator();
-		while (entries.hasNext()) {
-			Map.Entry entry = (Map.Entry) entries.next();
+		for (Map.Entry<Integer, Short> entry : memorySearchMap.entrySet()) {
 			int key = (Integer) entry.getKey();
 			if (is16BitSearch)
 				System.out.println(StaticFunctions.hexWord(key) + "    " + StaticFunctions
@@ -696,11 +682,7 @@ public class JavaBoy extends java.applet.Applet
 		BufferedReader in = null;
 		try {
 
-			if (JavaBoy.runningAsApplet) {
-				is = new URL(getDocumentBase(), fn).openStream();
-			} else {
-				is = new FileInputStream(new File(fn));
-			}
+			is = new FileInputStream(new File(fn));
 			in = new BufferedReader(new InputStreamReader(is));
 
 			String line;
@@ -1031,33 +1013,28 @@ public class JavaBoy extends java.applet.Applet
 	public void windowDeactivated(WindowEvent e) {
 	}
 
-	public JavaBoy() {
+	public JavaBoyNeo() {
 	}
 
 	/** Initialize JavaBoy when run as an application */
-	public JavaBoy(String cartName) {
+	public JavaBoyNeo(String cartName) {
 		mainWindow = new GameBoyScreen("JavaBoy " + versionString, this);
 		mainWindow.setVisible(true);
 		this.requestFocus();
-		// mainWindow.addKeyListener(this);
 		mainWindow.addWindowListener(this);
-		// cartridge = new Cartridge(cartName, mainWindow);
-		// dmgcpu = new Dmgcpu(cartridge, mainWindow);
 	}
 
 	public static void main(String[] args) {
 		System.out.println("JavaBoy (tm) Version " + versionString + " (c) 2005 Neil Millstone (application)");
 		runningAsApplet = false;
-		JavaBoy javaBoy = new JavaBoy("");
+		JavaBoyNeo javaBoy = new JavaBoyNeo("");
 
-		// javaBoy.mainWindow.addKeyListener(javaBoy);
-		// javaBoy.mainWindow.addWindowListener(javaBoy);
 		if (args.length > 0) {
-			if (args[0].equals("server")) {
+			if (args[0].equals("server"))
 				javaBoy.gameLink = new TCPGameLink(null);
-			} else if (args[0].equals("client")) {
+			else if (args[0].equals("client"))
 				javaBoy.gameLink = new TCPGameLink(null, args[1]);
-			}
+
 		}
 		// javaBoy.mainWindow.setGraphicsChip(javaBoy.dmgcpu.graphicsChip);
 
@@ -1065,74 +1042,7 @@ public class JavaBoy extends java.applet.Applet
 		p.start();
 	}
 
-	@Override
-	public void start() {
-		Thread p = new Thread(this);
-
-		runningAsApplet = true;
-		setupKeyboard();
-		System.out.println("JavaBoy (tm) Version " + versionString + " (c) 2005 Neil Millstone (applet)");
-
-		cartridge = new Cartridge(getParameter("ROMIMAGE"), this);
-		dmgcpu = new Dmgcpu(cartridge, null, this);
-		dmgcpu.graphicsChip.setMagnify(getSize().width / 160);
-		this.requestFocus();
-		p.start();
-
-		saveToWebEnable = getParameter("SAVERAMURL") != null;
-
-		popupMenu = new java.awt.PopupMenu();
-		popupMenu.add("JavaBoy " + versionString);
-		popupMenu.add("-");
-		popupMenu.add("Define Controls");
-		popupMenu.add(soundCheck = new java.awt.CheckboxMenuItem("Sound"));
-		popupMenu.add("-");
-		popupMenu.add("Reset");
-
-		if (saveToWebEnable) {
-			popupMenu.add("Save");
-			popupMenu.add("Load");
-		}
-
-		popupMenu.add("-");
-		popupMenu.add("Size: 1x");
-		popupMenu.add("Size: 2x");
-		popupMenu.add("Size: 3x");
-		popupMenu.add("Size: 4x");
-		popupMenu.add("-");
-		popupMenu.add("FrameSkip: 0");
-		popupMenu.add("FrameSkip: 1");
-		popupMenu.add("FrameSkip: 2");
-		popupMenu.add("FrameSkip: 3");
-		popupMenu.add("-");
-		popupMenu.add("JavaBoy Website");
-		popupMenu.addActionListener(this);
-
-		soundCheck.addItemListener(this);
-		setSoundEnable((getParameter("SOUND") == null) || (getParameter("SOUND").equals("ON")));
-
-		addMouseListener(this);
-		add(popupMenu);
-
-		cartridge.outputCartInfo();
-
-	}
-
 	public void run() {
-		if (runningAsApplet) {
-			System.out.println("Startingx...");
-			/*
-			 * if (getParameter("AUTOSCRIPT") == null) {
-			 * executeDebuggerScript("startup.scp"); } else {
-			 * executeDebuggerScript(getParameter("AUTOSCRIPT")); }
-			 */
-
-			/*
-			 * pyrx for debugging do { dmgcpu.reset(); dmgcpu.execute(-1); } while
-			 * (appletRunning);
-			 */
-		}
-
 		do {
 			// repaint();
 			try {
