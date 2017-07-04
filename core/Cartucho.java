@@ -1,21 +1,12 @@
 package core;
 
-import java.applet.Applet;
 import java.awt.Component;
 import java.awt.Frame;
-import java.awt.Label;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Calendar;
 
 /**
@@ -25,24 +16,13 @@ import java.util.Calendar;
  * (this is very rare).
  */
 
-class Cartucho {
+public class Cartucho {
 	/**
 	 * Translation between ROM size byte contained in the ROM header, and the number
 	 * of 16Kb ROM banks the cartridge will contain
 	 */
-	final int[][] romSizeTable = {
-			{ 0, 2 },
-			{ 1, 4 },
-			{ 2, 8 },
-			{ 3, 16 },
-			{ 4, 32 },
-			{ 5, 64 },
-			{ 6, 128 },
-			{ 7, 256 },
-			{ 0x52, 72 },
-			{ 0x53, 80 },
-			{ 0x54, 96 }
-	};
+	final int[][] romSizeTable = { { 0, 2 }, { 1, 4 }, { 2, 8 }, { 3, 16 }, { 4, 32 }, { 5, 64 }, { 6, 128 },
+			{ 7, 256 }, { 0x52, 72 }, { 0x53, 80 }, { 0x54, 96 } };
 
 	/**
 	 * Contains strings of the standard names of the cartridge mapper chips, indexed
@@ -188,9 +168,7 @@ class Cartucho {
 				System.err.println("Invalid Checksum\n");
 			}
 
-			if (!JavaBoyNeo.runningAsApplet) {
 				loadBatteryRam();
-			}
 
 			// Set up the real time clock
 			Calendar rightNow = Calendar.getInstance();
@@ -294,11 +272,7 @@ class Cartucho {
 		if (bFormat == bNotCompressed) {
 			try {
 				romIntFileName = stripExtention(romFileName);
-				if (JavaBoyNeo.runningAsApplet) {
-					return new java.net.URL(((Applet) (a)).getDocumentBase(), romFileName).openStream();
-				} else {
 					return new FileInputStream(new File(romFileName));
-				}
 			} catch (Exception e) {
 				System.out.println("Cant open file");
 				return null;
@@ -313,12 +287,7 @@ class Cartucho {
 
 			try {
 
-				if (JavaBoyNeo.runningAsApplet) {
-					zip = new java.util.zip.ZipInputStream(
-							new java.net.URL(((Applet) (a)).getDocumentBase(), romFileName).openStream());
-				} else {
-					zip = new java.util.zip.ZipInputStream(new java.io.FileInputStream(romFileName));
-				}
+				zip = new java.util.zip.ZipInputStream(new java.io.FileInputStream(romFileName));
 
 				// Check for valid files (GB or GBC ending in filename)
 				java.util.zip.ZipEntry ze;
@@ -335,15 +304,10 @@ class Cartucho {
 				}
 				// Show an error if no ROM file was found in the ZIP
 				if (!bFoundGBROM) {
-					if (JavaBoyNeo.runningAsApplet) {
-						// new Dialog((Frame) a, "Error", "No GBx ROM found!", "");
-					}
 					System.err.println("No GBx ROM found!");
 					throw new java.io.IOException("ERROR");
 				}
-				if (!JavaBoyNeo.runningAsApplet) {
 					System.out.println("Found " + romName);
-				}
 				return zip;
 			} catch (Exception e) {
 				System.out.println(e);
@@ -355,12 +319,7 @@ class Cartucho {
 			System.out.println("Loading GZIP Compressed ROM");
 			romIntFileName = stripExtention(romFileName);
 			try {
-				if (JavaBoyNeo.runningAsApplet) {
-					return new java.util.zip.GZIPInputStream(
-							new java.net.URL(((Applet) (a)).getDocumentBase(), romFileName).openStream());
-				} else {
 					return new java.util.zip.GZIPInputStream(new java.io.FileInputStream(romFileName));
-				}
 			} catch (Exception e) {
 				System.out.println("Can't open file");
 				return null;
@@ -590,13 +549,6 @@ class Cartucho {
 				}
 
 			}
-			/*
-			 * if ((addr >= 0x6000) && (addr <= 0x7FFF)) { if ((data & 1) == 1) {
-			 * mbc1LargeRamMode = true; System.out.println("Small Ram"); // ram = new
-			 * byte[0x8000]; } else { mbc1LargeRamMode = false;
-			 * System.out.println("Large Ram"); // ram = new byte[0x2000]; } }
-			 */
-
 			break;
 
 		case 0x19:
@@ -749,19 +701,10 @@ class Cartucho {
 		}
 	}
 
-	public void saveBatteryRAMToWeb(URL url, String username, Dmgcpu cpu) {
-		new WebSaveRAM(url, true, this, cpu, username);
-	}
-
-	public void loadBatteryRAMFromWeb(URL url, String username, Dmgcpu cpu) {
-		new WebSaveRAM(url, false, this, cpu, username);
-	}
 
 	/** Peforms saving of the battery RAM before the object is discarded */
 	public void dispose() {
-		if (!JavaBoyNeo.runningAsApplet) {
 			saveBatteryRam();
-		}
 		disposed = true;
 	}
 
@@ -810,11 +753,11 @@ class Cartucho {
 
 		String infoString = "ROM Info: Name = " + cartName + ", Size = " + (numBanks * 128) + "Kbit, ";
 
-		if (checksumOk) {
+		if (checksumOk) 
 			infoString = infoString + "Checksum Ok.";
-		} else {
+		 else 
 			infoString = infoString + "Checksum invalid!";
-		}
+		
 
 		StaticFunctions.debugLog(infoString);
 	}
@@ -840,195 +783,5 @@ class Cartucho {
 class NoSaveDataException extends java.lang.Exception {
 	public NoSaveDataException(String s) {
 		super(s);
-	}
-}
-
-class WebSaveRAM implements Runnable {
-	Cartucho cart;
-	boolean save;
-	URL url;
-	Dmgcpu cpu;
-	String username;
-
-	public WebSaveRAM(URL url, boolean save, Cartucho cart, Dmgcpu cpu, String username) {
-		this.url = url;
-		this.save = save;
-		this.cart = cart;
-		this.cpu = cpu;
-		this.username = username;
-
-		if (!cart.canSave()) {
-
-			// Dialog d = new Dialog(null, "Sorry", "This game does not", "have a save
-			// facility.");
-
-		} else {
-
-			if (save) {
-				// Dialog d = new Dialog(null, "Confirm", "Are you sure you want to save?",
-				// this);
-			} else {
-				// Dialog d = new Dialog(null, "Confirm", "Are you sure you want to load?",
-				// this);
-			}
-		}
-	}
-
-	public void yesPressed() {
-		Thread t = new Thread(this);
-		t.start();
-	}
-
-	public void noPressed() {
-		// Object deleted now
-	}
-
-	public void run() {
-		Frame f = new Frame("Please Wait...");
-		f.setSize(200, 120);
-
-		try {
-			if (save) {
-				f.add(new Label("Please wait, saving"), "North");
-				f.add(new Label("game data to web server..."), "Center");
-				f.setVisible(true);
-				saveRam();
-				// new ModalDialog(null, "Sucess!", "Game data", "Saved ok.");
-			} else {
-				f.add(new Label("Please wait, loading"), "North");
-				f.add(new Label("game data from web server..."), "Center");
-				f.setVisible(true);
-				loadRam();
-				// new ModalDialog(null, "Success!", "Game data", "loaded ok.");
-			}
-		} catch (NoSaveDataException e) {
-			System.out.println("Error! " + e);
-			// new ModalDialog(null, "Error!", "No save data can be found on the server!",
-			// e.toString());
-		} catch (Exception e) {
-			System.out.println("Error! " + e);
-			// new ModalDialog(null, "Error!", "Load/Save error! Report to site
-			// administrator.", e.toString());
-		}
-		f.setVisible(false);
-	}
-
-	public void saveRam() throws Exception {
-		// if (username == null) throw new Exception("No username provided");
-
-		String params = "";
-		String strUrl = url.toString();
-		int questionPos = strUrl.indexOf("?");
-		if (questionPos != -1) {
-			params = "&" + strUrl.substring(questionPos + 1, strUrl.length());
-		}
-
-		System.out.println("Params: (" + url + ") " + params);
-
-		url = new URL(url.getProtocol(), url.getHost(), url.getPort(),
-				url.getFile() + "?user=" + URLEncoder.encode(username, "UTF-8"));
-
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-		conn.setRequestMethod("POST");
-		conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-		conn.setDoOutput(true);
-		conn.setDoInput(true);
-
-		conn.connect();
-
-		DataOutputStream printout = new DataOutputStream(conn.getOutputStream());
-
-		StringBuffer saveData = new StringBuffer("");
-		byte[] ram = cart.getBatteryRam();
-
-		for (int r = 0; r < cart.getBatteryRamSize(); r++) {
-			saveData.append(StaticFunctions.hexByte(StaticFunctions.unsign(ram[r])));
-		}
-		// saveData = URLEncoder.encode("Hel\0lo");
-
-		String content = "romname=" + URLEncoder.encode(cart.getRomFilename(), "UTF-8") + "&gamename="
-				+ URLEncoder.encode(cart.getCartName(), "UTF-8") + "&user=" + URLEncoder.encode(username, "UTF-8") + "&datalength="
-				+ (cart.getBatteryRamSize() * 2) + "&data0=" + saveData + params;
-
-		System.out.println(content);
-
-		printout.writeBytes(content);
-		printout.flush();
-		printout.close();
-
-		conn.disconnect();
-
-		BufferedReader input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-		String str;
-		while (null != ((str = input.readLine()))) {
-			System.out.println(str);
-		}
-
-		System.out.println("OK!");
-	}
-
-	public void loadRam() throws Exception {
-		// if (username == null) throw new Exception("No username provided");
-
-		String params = "";
-		String strUrl = url.toString();
-		int questionPos = strUrl.indexOf("?");
-		if (questionPos != -1) {
-			params = "&" + strUrl.substring(questionPos + 1, strUrl.length());
-		}
-
-		System.out.println("Params: (" + url + ") " + params);
-
-		url = new URL(url.getProtocol(), url.getHost(), url.getPort(),
-				url.getFile() + "?user=" + URLEncoder.encode(username, "UTF-8") + params);
-
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-		conn.setRequestMethod("POST");
-		conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-		conn.setDoOutput(true);
-		conn.setDoInput(true);
-
-		conn.connect();
-
-		DataOutputStream printout = new DataOutputStream(conn.getOutputStream());
-
-		String content = "gamename=" + URLEncoder.encode(cart.getCartName(), "UTF-8") + "&romname="
-				+ URLEncoder.encode(cart.getRomFilename(), "UTF-8");
-
-		// System.out.println(content);
-
-		printout.writeBytes(content);
-		printout.flush();
-		printout.close();
-
-		conn.disconnect();
-
-		BufferedReader input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-		String str;
-		str = input.readLine();
-
-		// No save
-		if (str.equals("NOSAVERAM")) {
-			throw new NoSaveDataException("");
-		}
-
-		// General error
-		if (str.startsWith("ERROR")) {
-			throw new Exception(str);
-		}
-
-		int pos = 0;
-		try {
-			for (int r = 0; r < cart.getBatteryRamSize(); r++) {
-				String sub = str.substring(r * 2, r * 2 + 2);
-				int val = Integer.valueOf(sub, 16).intValue();
-				cart.ram[r] = (byte) val;
-			}
-		} catch (Exception e) {
-			throw e;
-		}
-		cpu.reset();
 	}
 }

@@ -86,10 +86,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -107,7 +104,6 @@ public class JavaBoyNeo extends java.applet.Applet
 	private static String versionString = "0.92";
 
 	private boolean appletRunning = true;
-	public static boolean runningAsApplet;
 	private Image backBuffer;
 	private boolean gameRunning;
 	private boolean fullFrame = true;
@@ -349,38 +345,6 @@ public class JavaBoyNeo extends java.applet.Applet
 			dmgcpu.graphicsChip.frameSkip = 4;
 		} else if (e.getActionCommand().equals("Reset")) {
 			dmgcpu.reset();
-		} else if (e.getActionCommand().equals("Save")) {
-
-			try {
-				dmgcpu.cartridge.saveBatteryRAMToWeb(new URL(getParameter("SAVERAMURL")), getParameter("USERNAME"),
-						dmgcpu);
-			} catch (MalformedURLException ex) {
-
-			}
-
-			// f.hide();
-
-		} else if (e.getActionCommand().equals("Load")) {
-			try {
-				// dmgcpu.terminateProcess();
-				dmgcpu.cartridge.loadBatteryRAMFromWeb(new URL(getParameter("LOADRAMURL")), getParameter("USERNAME"),
-						dmgcpu);
-				// do {
-				// java.lang.Thread.sleep(1);
-				// } while (!dmgcpu.cartridge.needsResetEnable());
-				System.out.println("Resetting...");
-				// dmgcpu.terminate = false;
-				// dmgcpu.execute(-1);
-			} catch (Exception ex) {
-
-			}
-
-		} else if (e.getActionCommand().equals("JavaBoy Website")) {
-			try {
-				getAppletContext().showDocument(new URL(WEBSITE_URL), "_new");
-			} catch (MalformedURLException ex) {
-
-			}
 		}
 	}
 
@@ -474,14 +438,12 @@ public class JavaBoyNeo extends java.applet.Applet
 		case KeyEvent.VK_F1:
 			if (dmgcpu.graphicsChip.frameSkip != 1)
 				dmgcpu.graphicsChip.frameSkip--;
-			if (runningAsApplet)
-				showStatus("Frameskip now " + dmgcpu.graphicsChip.frameSkip);
+			System.out.println("Frameskip now " + dmgcpu.graphicsChip.frameSkip);
 			break;
 		case KeyEvent.VK_F2:
 			if (dmgcpu.graphicsChip.frameSkip != 10)
 				dmgcpu.graphicsChip.frameSkip++;
-			if (runningAsApplet)
-				showStatus("Frameskip now " + dmgcpu.graphicsChip.frameSkip);
+			System.out.println("Frameskip now " + dmgcpu.graphicsChip.frameSkip);
 			break;
 		case KeyEvent.VK_F5:
 			dmgcpu.terminateProcess();
@@ -531,13 +493,11 @@ public class JavaBoyNeo extends java.applet.Applet
 			int end = readWriteMemoryMap[i][1]; // inclusive
 
 			if (is16BitSearch) {
-				for (int j = start; j <= end; j += 2) {
+				for (int j = start; j <= end; j += 2)
 					memorySearchMap.put(j, (short) ((dmgcpu.addressRead(j + 1) << 8) + dmgcpu.addressRead(j)));
-				}
 			} else {
-				for (int j = start; j <= end; j++) {
+				for (int j = start; j <= end; j++)
 					memorySearchMap.put(j, dmgcpu.addressRead(j));
-				}
 			}
 
 		}
@@ -716,13 +676,9 @@ public class JavaBoyNeo extends java.applet.Applet
 
 	public void setupKeyboard() {
 		if (!keyListener) {
-			if (!runningAsApplet) {
-				System.out.println("Starting key controls");
-				mainWindow.addKeyListener(this);
-				mainWindow.requestFocus();
-			} else {
-				addKeyListener(this);
-			}
+			System.out.println("Starting key controls");
+			mainWindow.addKeyListener(this);
+			mainWindow.requestFocus();
 			keyListener = true;
 		}
 	}
@@ -1026,7 +982,6 @@ public class JavaBoyNeo extends java.applet.Applet
 
 	public static void main(String[] args) {
 		System.out.println("JavaBoy (tm) Version " + versionString + " (c) 2005 Neil Millstone (application)");
-		runningAsApplet = false;
 		JavaBoyNeo javaBoy = new JavaBoyNeo("");
 
 		if (args.length > 0) {
@@ -1034,9 +989,7 @@ public class JavaBoyNeo extends java.applet.Applet
 				javaBoy.gameLink = new TCPGameLink(null);
 			else if (args[0].equals("client"))
 				javaBoy.gameLink = new TCPGameLink(null, args[1]);
-
 		}
-		// javaBoy.mainWindow.setGraphicsChip(javaBoy.dmgcpu.graphicsChip);
 
 		Thread p = new Thread(javaBoy);
 		p.start();
