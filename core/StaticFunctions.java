@@ -1,5 +1,9 @@
 package core;
 
+import java.awt.Image;
+
+import com.sun.javafx.tk.ImageLoader;
+
 public class StaticFunctions {
 
 	private static final String hexChars = "0123456789ABCDEF";
@@ -76,5 +80,16 @@ public class StaticFunctions {
 
 		return s;
 	}
+	
+	/* FROM CARTUCHO */
+	
+	public static String stripExtention(String filename) {
+		int dotPosition = filename.lastIndexOf('.');
 
+		if (dotPosition != -1) {
+			return filename.substring(0, dotPosition);
+		} else {
+			return filename;
+		}
+	}
 }

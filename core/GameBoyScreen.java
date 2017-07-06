@@ -21,14 +21,14 @@ import java.awt.event.ComponentListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import javafx.GameBoyScreenController;
+import javafx.GBScreenController;
 
 /**
  * This class is used when JavaBoy is run as an application to provide the user
  * interface.
  */
 
-class GameBoyScreen extends Frame implements ActionListener, ComponentListener, ItemListener {
+public class GameBoyScreen extends Frame implements ActionListener, ComponentListener, ItemListener {
 	GraphicsChip graphicsChip = null;
 	JavaBoyNeo applet;
 
@@ -68,6 +68,10 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 	Dialog connectDialog;
 
 	CheckboxMenuItem[] schemes = new CheckboxMenuItem[JavaBoyNeo.schemeNames.length];
+
+	public GameBoyScreen(JavaBoyNeo a) {
+		applet = a;
+	}
 
 	/** Creates the JavaBoy interface, with the specified title text */
 	public GameBoyScreen(String s, JavaBoyNeo a) {
@@ -356,76 +360,76 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 	}
 
 	public void setSoundFreq() {
-		if ((applet.dmgcpu != null) && (applet.dmgcpu.soundChip.soundEnabled)) {
-			if (soundFreq11.getState()) {
-				applet.dmgcpu.soundChip.setSampleRate(11025);
-			}
-			if (soundFreq22.getState()) {
-				applet.dmgcpu.soundChip.setSampleRate(22050);
-			}
-			if (soundFreq44.getState()) {
-				applet.dmgcpu.soundChip.setSampleRate(44100);
-			}
+		if ((applet.cpu != null) && (applet.cpu.soundChip.soundEnabled)) {
+			if (soundFreq11.getState())
+				applet.cpu.soundChip.setSampleRate(11025);
+
+			if (soundFreq22.getState())
+				applet.cpu.soundChip.setSampleRate(22050);
+
+			if (soundFreq44.getState())
+				applet.cpu.soundChip.setSampleRate(44100);
+
 		}
 	}
 
 	public void setBufferLength() {
-		if ((applet.dmgcpu != null) && (applet.dmgcpu.soundChip.soundEnabled)) {
-			if (soundBuffer200.getState()) {
-				applet.dmgcpu.soundChip.setBufferLength(200);
-			}
-			if (soundBuffer300.getState()) {
-				applet.dmgcpu.soundChip.setBufferLength(300);
-			}
-			if (soundBuffer400.getState()) {
-				applet.dmgcpu.soundChip.setBufferLength(400);
-			}
+		if ((applet.cpu != null) && (applet.cpu.soundChip.soundEnabled)) {
+			if (soundBuffer200.getState())
+				applet.cpu.soundChip.setBufferLength(200);
+
+			if (soundBuffer300.getState())
+				applet.cpu.soundChip.setBufferLength(300);
+
+			if (soundBuffer400.getState())
+				applet.cpu.soundChip.setBufferLength(400);
+
 		}
 	}
 
 	public void setChannelEnable() {
-		if ((applet.dmgcpu != null) && (applet.dmgcpu.soundChip.soundEnabled)) {
-			applet.dmgcpu.soundChip.channel1Enable = soundChannel1Enable.getState();
-			applet.dmgcpu.soundChip.channel2Enable = soundChannel2Enable.getState();
-			applet.dmgcpu.soundChip.channel3Enable = soundChannel3Enable.getState();
-			applet.dmgcpu.soundChip.channel4Enable = soundChannel4Enable.getState();
+		if ((applet.cpu != null) && (applet.cpu.soundChip.soundEnabled)) {
+			applet.cpu.soundChip.channel1Enable = soundChannel1Enable.getState();
+			applet.cpu.soundChip.channel2Enable = soundChannel2Enable.getState();
+			applet.cpu.soundChip.channel3Enable = soundChannel3Enable.getState();
+			applet.cpu.soundChip.channel4Enable = soundChannel4Enable.getState();
 		}
 	}
 
 	public void setMagnify() {
-		if (applet.dmgcpu != null) {
-			if (viewSingle.getState()) {
-				applet.dmgcpu.graphicsChip.setMagnify(1);
-			}
-			if (viewDouble.getState()) {
-				applet.dmgcpu.graphicsChip.setMagnify(2);
-			}
-			if (viewTriple.getState()) {
-				applet.dmgcpu.graphicsChip.setMagnify(3);
-			}
-			if (viewQuadrouple.getState()) {
-				applet.dmgcpu.graphicsChip.setMagnify(4);
-			}
+		if (applet.cpu != null) {
+			if (viewSingle.getState())
+				applet.cpu.graphicsChip.setMagnify(1);
+
+			if (viewDouble.getState())
+				applet.cpu.graphicsChip.setMagnify(2);
+
+			if (viewTriple.getState())
+				applet.cpu.graphicsChip.setMagnify(3);
+
+			if (viewQuadrouple.getState())
+				applet.cpu.graphicsChip.setMagnify(4);
+
 		}
 	}
 
 	public void setFrameSkip() {
-		if (applet.dmgcpu != null) {
-			if (viewFrameSkip0.getState()) {
+		if (applet.cpu != null) {
+			if (viewFrameSkip0.getState())
 				graphicsChip.frameSkip = 1;
-			}
-			if (viewFrameSkip1.getState()) {
+
+			if (viewFrameSkip1.getState())
 				graphicsChip.frameSkip = 2;
-			}
-			if (viewFrameSkip2.getState()) {
+
+			if (viewFrameSkip2.getState())
 				graphicsChip.frameSkip = 3;
-			}
-			if (viewFrameSkip3.getState()) {
+
+			if (viewFrameSkip3.getState())
 				graphicsChip.frameSkip = 4;
-			}
-			if (viewFrameSkip4.getState()) {
+
+			if (viewFrameSkip4.getState())
 				graphicsChip.frameSkip = 5;
-			}
+
 		}
 	}
 
@@ -436,44 +440,43 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 
 		if (command.equals("Open ROM")) {
 
-			if (applet.dmgcpu != null) {
-				applet.dmgcpu.terminate = true;
-				if (applet.cartridge != null)
-					applet.cartridge.dispose();
-				if (applet.dmgcpu != null) {
-					applet.dmgcpu.dispose();
-					applet.dmgcpu = null;
+			if (applet.cpu != null) {
+				applet.cpu.terminate = true;
+				if (applet.cartucho != null)
+					applet.cartucho.dispose();
+				if (applet.cpu != null) {
+					applet.cpu.dispose();
+					applet.cpu = null;
 				}
 				clearWindow();
 			}
-			
+
 			FileDialog fd = new FileDialog(this, "Open ROM");
 			fd.setVisible(true);
 
 			if (fd.getFile() != null) {
-				applet.cartridge = new Cartucho(fd.getDirectory() + fd.getFile(), this);
-				applet.dmgcpu = new Dmgcpu(applet.cartridge, applet.gameLink, this);
+				applet.cartucho = new Cartucho(fd.getDirectory() + fd.getFile(), this);
+				applet.cpu = new Dmgcpu(applet.cartucho, applet.cableLink, this);
 				// applet.gameBoyPrinter = new GameBoyPrinter();
-				if (applet.gameLink != null)
-					applet.gameLink.setDmgcpu(applet.dmgcpu);
-				setGraphicsChip(applet.dmgcpu.graphicsChip);
+				if (applet.cableLink != null)
+					applet.cableLink.setDmgcpu(applet.cpu);
+				setGraphicsChip(applet.cpu.graphicsChip);
 				setSoundFreq();
 				setBufferLength();
 				setMagnify();
 				setFrameSkip();
 				setChannelEnable();
-				applet.dmgcpu.allowGbcFeatures = fileGameboyColor.getState();
-				applet.dmgcpu.reset();
-				
+				applet.cpu.allowGbcFeatures = fileGameboyColor.getState();
+				applet.cpu.reset();
+
 				/*
 				 * Con las siguientes lineas, inicio el juego nada más seleccionarlo.
 				 * 
 				 * Odio las esperas :)
 				 */
-				
-				applet.queueDebuggerCommand("s;g");
-				applet.dmgcpu.terminate = true;
 
+				applet.queueDebuggerCommand("s;g");
+				applet.cpu.terminate = true;
 			}
 
 		} else if (command.equals("Frame counter"))
@@ -483,50 +486,50 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 			viewSpeedThrottle.setState(!viewSpeedThrottle.getState());
 
 		else if (command.equals("Emulate")) {
-			if ((applet.cartridge != null) && (applet.cartridge.cartridgeReady)) {
+			if ((applet.cartucho != null) && (applet.cartucho.cartridgeReady)) {
 				applet.queueDebuggerCommand("g");
-				applet.dmgcpu.terminate = true;
+				applet.cpu.terminate = true;
 			} else {
 				new ModalDialog(this, "Error", "You need to load a ROM before", "you select 'Emulate'.");
 			}
 		} else if (command.equals("Reset")) {
 			applet.queueDebuggerCommand("s;g");
-			applet.dmgcpu.terminate = true;
+			applet.cpu.terminate = true;
 		} else if (command.equals("Pause")) {
-			applet.dmgcpu.terminate = true;
+			applet.cpu.terminate = true;
 		} else if (command.equals("Controls")) {
 			// makeControlsDialog();
 			new DefineControls();
 		} else if (command.equals("Execute script")) {
-			if (applet.dmgcpu != null) {
+			if (applet.cpu != null) {
 				FileDialog fd = new FileDialog(this, "Execute debugger script");
 				fd.setVisible(true);
 				applet.queueDebuggerCommand("c " + fd.getDirectory() + fd.getFile());
-				applet.dmgcpu.terminate = true;
+				applet.cpu.terminate = true;
 			} else {
 				new ModalDialog(this, "Error", "Load a ROM before executing a debugger script", "");
 			}
 		} else if (command.equals("Enter debugger")) {
-			if (applet.dmgcpu != null) {
+			if (applet.cpu != null) {
 				applet.debuggerActive = true;
-				applet.dmgcpu.terminate = true;
+				applet.cpu.terminate = true;
 			} else {
 				new ModalDialog(this, "Error", "Load a ROM before entering the debugger", "");
 			}
 		} else if (command.equals("1x")) {
-			applet.dmgcpu.graphicsChip.setMagnify(1);
+			applet.cpu.graphicsChip.setMagnify(1);
 			setWindowSize(1);
 			clearWindow();
 		} else if (command.equals("2x")) {
-			applet.dmgcpu.graphicsChip.setMagnify(2);
+			applet.cpu.graphicsChip.setMagnify(2);
 			setWindowSize(2);
 			clearWindow();
 		} else if (command.equals("3x")) {
-			applet.dmgcpu.graphicsChip.setMagnify(3);
+			applet.cpu.graphicsChip.setMagnify(3);
 			setWindowSize(3);
 			clearWindow();
 		} else if (command.equals("4x")) {
-			applet.dmgcpu.graphicsChip.setMagnify(4);
+			applet.cpu.graphicsChip.setMagnify(4);
 			setWindowSize(4);
 			clearWindow();
 		} else if (command.equals("Connect to client")) {
@@ -537,10 +540,10 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 		} else if (command.equals("Connect ok")) {
 			connectDialog.setVisible(false);
 			connectDialog = null;
-			applet.gameLink = new TCPGameLink(this, hostAddress.getText());
-			if (applet.dmgcpu != null) {
-				applet.dmgcpu.gameLink = applet.gameLink;
-				applet.gameLink.setDmgcpu(applet.dmgcpu);
+			applet.cableLink = new TCPGameLink(this, hostAddress.getText());
+			if (applet.cpu != null) {
+				applet.cpu.gameLink = applet.cableLink;
+				applet.cableLink.setDmgcpu(applet.cpu);
 			}
 		} else if (command.equals("Exit")) {
 			applet.dispose();
@@ -549,7 +552,7 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 	}
 
 	public void setColourScheme(String command) {
-		if (applet.dmgcpu == null) {
+		if (applet.cpu == null) {
 			new ModalDialog(this, "Error", "Load a ROM before selecting", "a colour scheme.");
 			for (int r = 0; r < JavaBoyNeo.schemeNames.length; r++) {
 				if (JavaBoyNeo.schemeNames[r] == command) {
@@ -559,18 +562,18 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 		} else {
 			for (int r = 0; r < JavaBoyNeo.schemeNames.length; r++) {
 				if (JavaBoyNeo.schemeNames[r] == command) {
-					applet.dmgcpu.graphicsChip.backgroundPalette.setColours(JavaBoyNeo.schemeColours[r][0],
+					applet.cpu.graphicsChip.backgroundPalette.setColours(JavaBoyNeo.schemeColours[r][0],
 							JavaBoyNeo.schemeColours[r][1], JavaBoyNeo.schemeColours[r][2],
 							JavaBoyNeo.schemeColours[r][3]);
 
-					applet.dmgcpu.graphicsChip.obj1Palette.setColours(JavaBoyNeo.schemeColours[r][4],
+					applet.cpu.graphicsChip.obj1Palette.setColours(JavaBoyNeo.schemeColours[r][4],
 							JavaBoyNeo.schemeColours[r][5], JavaBoyNeo.schemeColours[r][6],
 							JavaBoyNeo.schemeColours[r][7]);
 
-					applet.dmgcpu.graphicsChip.obj2Palette.setColours(JavaBoyNeo.schemeColours[r][8],
+					applet.cpu.graphicsChip.obj2Palette.setColours(JavaBoyNeo.schemeColours[r][8],
 							JavaBoyNeo.schemeColours[r][9], JavaBoyNeo.schemeColours[r][10],
 							JavaBoyNeo.schemeColours[r][11]);
-					applet.dmgcpu.graphicsChip.invalidateAll();
+					applet.cpu.graphicsChip.invalidateAll();
 				} else {
 					schemes[r].setState(false);
 				}
@@ -583,20 +586,20 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 		String command = (String) e.getItem();
 		System.out.println(command);
 		if (command.equals("Channel 1 (Square wave)")) {
-			if (applet.dmgcpu != null) {
-				applet.dmgcpu.soundChip.channel1Enable = soundChannel1Enable.getState();
+			if (applet.cpu != null) {
+				applet.cpu.soundChip.channel1Enable = soundChannel1Enable.getState();
 			}
 		} else if (command.equals("Channel 2 (Square wave)")) {
-			if (applet.dmgcpu != null) {
-				applet.dmgcpu.soundChip.channel2Enable = soundChannel2Enable.getState();
+			if (applet.cpu != null) {
+				applet.cpu.soundChip.channel2Enable = soundChannel2Enable.getState();
 			}
 		} else if (command.equals("Channel 3 (Voluntary wave)")) {
-			if (applet.dmgcpu != null) {
-				applet.dmgcpu.soundChip.channel3Enable = soundChannel3Enable.getState();
+			if (applet.cpu != null) {
+				applet.cpu.soundChip.channel3Enable = soundChannel3Enable.getState();
 			}
 		} else if (command.equals("Channel 4 (Noise)")) {
-			if (applet.dmgcpu != null) {
-				applet.dmgcpu.soundChip.channel4Enable = soundChannel4Enable.getState();
+			if (applet.cpu != null) {
+				applet.cpu.soundChip.channel4Enable = soundChannel4Enable.getState();
 			}
 		} else if (command.equals("Size: actual")) {
 			viewSingle.setState(true);
@@ -692,42 +695,42 @@ class GameBoyScreen extends Frame implements ActionListener, ComponentListener, 
 			soundBuffer400.setState(true);
 			setBufferLength();
 		} else if (command.equals("Use Gameboy Color features")) {
-			if (applet.dmgcpu != null) {
-				applet.dmgcpu.allowGbcFeatures = !applet.dmgcpu.allowGbcFeatures;
+			if (applet.cpu != null) {
+				applet.cpu.allowGbcFeatures = !applet.cpu.allowGbcFeatures;
 			} else {
 				fileGameboyColor.setState(!fileGameboyColor.getState());
 			}
 		} else if (command.equals("Allow connections")) {
-			if (applet.gameLink == null) {
-				applet.gameLink = new TCPGameLink(this);
-				if (applet.gameLink.serverRunning) {
+			if (applet.cableLink == null) {
+				applet.cableLink = new TCPGameLink(this);
+				if (applet.cableLink.serverRunning) {
 					networkServer.setState(true);
 				} else {
 					networkServer.setState(false);
-					applet.gameLink = null;
+					applet.cableLink = null;
 				}
-				if (applet.dmgcpu != null) {
-					applet.dmgcpu.gameLink = applet.gameLink;
-					applet.gameLink.setDmgcpu(applet.dmgcpu);
+				if (applet.cpu != null) {
+					applet.cpu.gameLink = applet.cableLink;
+					applet.cableLink.setDmgcpu(applet.cpu);
 				}
 			} else {
-				applet.gameLink.shutDown();
-				applet.gameLink = null;
-				if (applet.dmgcpu != null)
-					applet.dmgcpu.gameLink = null;
+				applet.cableLink.shutDown();
+				applet.cableLink = null;
+				if (applet.cpu != null)
+					applet.cpu.gameLink = null;
 			}
 		} else if (command.equals("Emulate printer")) {
 			if (networkPrinter.getState()) {
-				if (applet.gameLink != null) {
-					applet.gameLink.shutDown();
+				if (applet.cableLink != null) {
+					applet.cableLink.shutDown();
 					networkServer.setState(false);
 				}
-				applet.gameLink = new GameBoyPrinter();
-				applet.gameLink.setDmgcpu(applet.dmgcpu);
-				applet.dmgcpu.gameLink = applet.gameLink;
+				applet.cableLink = new GameBoyPrinter();
+				applet.cableLink.setDmgcpu(applet.cpu);
+				applet.cpu.gameLink = applet.cableLink;
 			} else {
-				applet.gameLink.shutDown();
-				applet.gameLink = null;
+				applet.cableLink.shutDown();
+				applet.cableLink = null;
 			}
 		} else {
 			setColourScheme(command);

@@ -8,6 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * This class represents the game cartridge and contains methods to load the ROM
@@ -124,11 +127,16 @@ public class Cartucho {
 
 	/**
 	 * Create a cartridge object, loading ROM and any associated battery RAM from
-	 * the cartridge filename given. Loads via the web if JavaBoy is running as an
-	 * applet
+	 * the cartridge filename given.
 	 */
 	public Cartucho(String romFileName, Component a) {
+		/*
+		 * Cartucho recibe como parámetros la ruta del fichero ROM y el componente gráfico en el
+		 * que debe dibujar la salida de vídeo.
+		 */
+		
 		applet = a; /* 5823 */
+		
 		this.romFileName = romFileName;
 		InputStream is = null;
 		try {
@@ -144,14 +152,11 @@ public class Cartucho {
 
 			numBanks = lookUpCartSize(firstBank[0x0148]); // Determine the number of 16kb rom banks
 
-			// is.close();
-			// is = new FileInputStream(new File(romFileName));
 			rom = new byte[0x04000 * numBanks]; // Recreate the ROM array with the correct size
 
 			// Copy first bank into main rom array
-			for (int r = 0; r < 0x4000; r++) {
+			for (int r = 0; r < 0x4000; r++)
 				rom[r] = firstBank[r];
-			}
 
 			total = 0x04000 * (numBanks - 1); // Calculate total ROM size (first one already loaded)
 			do { // Read ROM into memory
@@ -164,11 +169,10 @@ public class Cartucho {
 			StaticFunctions
 					.debugLog("Type: " + cartTypeTable[cartType] + " (" + StaticFunctions.hexByte(cartType) + ")");
 
-			if (!verifyChecksum() && (a instanceof Frame)) {
+			if (!verifyChecksum() && (a instanceof Frame))
 				System.err.println("Invalid Checksum\n");
-			}
 
-				loadBatteryRam();
+			loadBatteryRam();
 
 			// Set up the real time clock
 			Calendar rightNow = Calendar.getInstance();
@@ -192,10 +196,6 @@ public class Cartucho {
 		} catch (IOException e) {
 			System.out.println("Error opening ROM image '" + romFileName + "'!");
 		} catch (IndexOutOfBoundsException e) {
-			/*
-			 * new Dialog((Frame) a, "Error", "Loading the ROM image failed.",
-			 * "The file is not a valid Gameboy ROM.");
-			 */
 		}
 
 	}
@@ -206,9 +206,8 @@ public class Cartucho {
 			needsReset = false;
 			System.out.println("Reset requested");
 			return true;
-		} else {
+		} else 
 			return false;
-		}
 	}
 
 	public void resetSystem() {
@@ -232,9 +231,8 @@ public class Cartucho {
 						if (RTCReg[DAYS_LO] == 255) {
 							RTCReg[DAYS_LO] = 0;
 							RTCReg[DAYS_HI] = 1;
-						} else {
+						} else 
 							RTCReg[DAYS_LO]++;
-						}
 						RTCReg[HOURS] = 0;
 					}
 				}
@@ -243,36 +241,25 @@ public class Cartucho {
 		}
 	}
 
-	String stripExtention(String filename) {
-		int dotPosition = filename.lastIndexOf('.');
-
-		if (dotPosition != -1) {
-			return filename.substring(0, dotPosition);
-		} else {
-			return filename;
-		}
-	}
-
 	public InputStream openRom(String romFileName, Component a) {
 		byte bFormat;
 		boolean bFoundGBROM = false;
 		String romName = "None";
 
-		if (romFileName.toUpperCase().indexOf("ZIP") > -1) {
+		if (romFileName.toUpperCase().indexOf("ZIP") > -1)
 			bFormat = bZip;
-		} else if (romFileName.toUpperCase().indexOf("JAR") > -1) {
+		else if (romFileName.toUpperCase().indexOf("JAR") > -1)
 			bFormat = bZip;
-		} else if (romFileName.toUpperCase().indexOf("GZ") > -1) {
+		else if (romFileName.toUpperCase().indexOf("GZ") > -1)
 			bFormat = bGZip;
-		} else {
+		else
 			bFormat = bNotCompressed;
-		}
 
 		// Simplest case, open plain gb or gbc file.
 		if (bFormat == bNotCompressed) {
 			try {
-				romIntFileName = stripExtention(romFileName);
-					return new FileInputStream(new File(romFileName));
+				romIntFileName = StaticFunctions.stripExtention(romFileName);
+				return new FileInputStream(new File(romFileName));
 			} catch (Exception e) {
 				System.out.println("Cant open file");
 				return null;
@@ -283,20 +270,20 @@ public class Cartucho {
 		if (bFormat == bZip) {
 			System.out.println("Loading ZIP Compressed ROM");
 
-			java.util.zip.ZipInputStream zip;
+			ZipInputStream zip;
 
 			try {
 
-				zip = new java.util.zip.ZipInputStream(new java.io.FileInputStream(romFileName));
+				zip = new ZipInputStream(new FileInputStream(romFileName));
 
 				// Check for valid files (GB or GBC ending in filename)
-				java.util.zip.ZipEntry ze;
+				ZipEntry ze;
 
 				while ((ze = zip.getNextEntry()) != null) {
 					String str = ze.getName();
 					if (str.toUpperCase().indexOf(".GB") > -1 || str.toUpperCase().indexOf(".GBC") > -1) {
 						bFoundGBROM = true;
-						romIntFileName = stripExtention(str);
+						romIntFileName = StaticFunctions.stripExtention(str);
 						romName = str;
 						// Leave loop if a ROM was found.
 						break;
@@ -305,9 +292,9 @@ public class Cartucho {
 				// Show an error if no ROM file was found in the ZIP
 				if (!bFoundGBROM) {
 					System.err.println("No GBx ROM found!");
-					throw new java.io.IOException("ERROR");
+					throw new IOException("ERROR");
 				}
-					System.out.println("Found " + romName);
+				System.out.println("Found " + romName);
 				return zip;
 			} catch (Exception e) {
 				System.out.println(e);
@@ -317,9 +304,9 @@ public class Cartucho {
 
 		if (bFormat == bGZip) {
 			System.out.println("Loading GZIP Compressed ROM");
-			romIntFileName = stripExtention(romFileName);
+			romIntFileName = StaticFunctions.stripExtention(romFileName);
 			try {
-					return new java.util.zip.GZIPInputStream(new java.io.FileInputStream(romFileName));
+				return new GZIPInputStream(new FileInputStream(romFileName));
 			} catch (Exception e) {
 				System.out.println("Can't open file");
 				return null;
@@ -440,15 +427,12 @@ public class Cartucho {
 	 * debugger.
 	 */
 	public void debuggerAddressWrite(int addr, int data) {
-		if (cartType == 0) {
+		if (cartType == 0)
 			rom[addr] = (byte) data;
-		} else {
-			if (addr < 0x4000) {
-				rom[addr] = (byte) data;
-			} else {
-				rom[pageStart + addr - 0x4000] = (byte) data;
-			}
-		}
+		else if (addr < 0x4000)
+			rom[addr] = (byte) data;
+		else
+			rom[pageStart + addr - 0x4000] = (byte) data;
 	}
 
 	/**
@@ -486,19 +470,19 @@ public class Cartucho {
 					// ram = new byte[0x2000];
 				}
 			} else if (addr <= 0x1FFF) {
-				if ((data & 0x0F) == 0x0A) {
+				if ((data & 0x0F) == 0x0A)
 					ramEnabled = true;
-				} else {
+				else
 					ramEnabled = false;
-				}
+
 			} else if ((addr <= 0x5FFF) && (addr >= 0x4000)) {
 				if (mbc1LargeRamMode) {
 					ramBank = (data & 0x03);
 					ramPageStart = ramBank * 0x2000;
 					// System.out.println("RAM bank " + ramBank + " selected!");
-				} else {
+				} else
 					mapRom((currentBank & 0x1F) | ((data & 0x03) << 5));
-				}
+
 			}
 			break;
 
@@ -510,10 +494,9 @@ public class Cartucho {
 					bankNo = 1;
 				mapRom(bankNo);
 			}
-			if ((addr >= 0xA000) && (addr <= 0xBFFF)) {
+			if ((addr >= 0xA000) && (addr <= 0xBFFF))
 				if (ramEnabled)
 					ram[addr - 0xA000 + ramPageStart] = (byte) data;
-			}
 
 			break;
 
@@ -533,16 +516,16 @@ public class Cartucho {
 				// Select RAM bank
 				ramBank = data;
 
-				if (ramBank < 0x04) {
+				if (ramBank < 0x04)
 					ramPageStart = ramBank * 0x2000;
-				}
+
 				// System.out.println("RAM bank " + ramBank + " selected!");
 			}
 			if ((addr >= 0xA000) && (addr <= 0xBFFF)) {
 				// Let the game write to RAM
-				if (ramBank <= 0x03) {
+				if (ramBank <= 0x03)
 					ram[addr - 0xA000 + ramPageStart] = (byte) data;
-				} else {
+				else {
 					// Write to realtime clock registers
 					RTCReg[ramBank - 0x08] = data;
 					// System.out.println("RTC Reg " + ramBank + " = " + data);
@@ -572,9 +555,9 @@ public class Cartucho {
 				ramPageStart = ramBank * 0x2000;
 				// System.out.println("RAM bank " + ramBank + " selected!");
 			}
-			if ((addr >= 0xA000) && (addr <= 0xBFFF)) {
+			if ((addr >= 0xA000) && (addr <= 0xBFFF))
 				ram[addr - 0xA000 + ramPageStart] = (byte) data;
-			}
+
 			break;
 
 		}
@@ -612,11 +595,10 @@ public class Cartucho {
 		try {
 			int dotPosition = romFileName.lastIndexOf('.');
 
-			if (dotPosition != -1) {
+			if (dotPosition != -1)
 				saveRamFileName = romFileName.substring(0, dotPosition) + ".sav";
-			} else {
+			else
 				saveRamFileName = romFileName + ".sav";
-			}
 
 			/*
 			 * if (rom[0x149] == 0x03) { numRamBanks = 4; } else { numRamBanks = 1; }
@@ -643,12 +625,10 @@ public class Cartucho {
 	}
 
 	public int getBatteryRamSize() {
-		int numRamBanks;
-		if (rom[0x149] == 0x06) {
+		if (rom[0x149] == 0x06)
 			return 512;
-		} else {
+		else
 			return getNumRAMBanks() * 8192;
-		}
 	}
 
 	public byte[] getBatteryRam() {
@@ -676,11 +656,10 @@ public class Cartucho {
 		try {
 			int dotPosition = romFileName.lastIndexOf('.');
 
-			if (dotPosition != -1) {
+			if (dotPosition != -1)
 				saveRamFileName = romFileName.substring(0, dotPosition) + ".sav";
-			} else {
+			else
 				saveRamFileName = romFileName + ".sav";
-			}
 
 			if ((cartType == 3) || (cartType == 9) || (cartType == 0x1B) || (cartType == 0x1E) || (cartType == 0x10)
 					|| (cartType == 0x13)) {
@@ -701,10 +680,9 @@ public class Cartucho {
 		}
 	}
 
-
 	/** Peforms saving of the battery RAM before the object is discarded */
 	public void dispose() {
-			saveBatteryRam();
+		saveBatteryRam();
 		disposed = true;
 	}
 
@@ -712,11 +690,9 @@ public class Cartucho {
 		int checkSum = (StaticFunctions.unsign(rom[0x14E]) << 8) + StaticFunctions.unsign(rom[0x14F]);
 
 		int total = 0; // Calculate ROM checksum
-		for (int r = 0; r < rom.length; r++) {
-			if ((r != 0x14E) && (r != 0x14F)) {
+		for (int r = 0; r < rom.length; r++)
+			if ((r != 0x14E) && (r != 0x14F))
 				total = (total + StaticFunctions.unsign(rom[r])) & 0x0000FFFF;
-			}
-		}
 
 		return checkSum == total;
 	}
@@ -745,19 +721,18 @@ public class Cartucho {
 		String s = "";
 		for (int r = 0; r < cartName.length(); r++) {
 			if (((int) cartName.charAt(r) != 0) && ((int) cartName.charAt(r) >= 32)
-					&& ((int) cartName.charAt(r) <= 127)) {
+					&& ((int) cartName.charAt(r) <= 127))
 				s += cartName.charAt(r);
-			}
+
 		}
 		cartName = s;
 
 		String infoString = "ROM Info: Name = " + cartName + ", Size = " + (numBanks * 128) + "Kbit, ";
 
-		if (checksumOk) 
+		if (checksumOk)
 			infoString = infoString + "Checksum Ok.";
-		 else 
+		else
 			infoString = infoString + "Checksum invalid!";
-		
 
 		StaticFunctions.debugLog(infoString);
 	}
@@ -767,20 +742,18 @@ public class Cartucho {
 	 */
 	public int lookUpCartSize(int sizeByte) {
 		int i = 0;
-		while ((i < romSizeTable.length) && (romSizeTable[i][0] != sizeByte)) {
+		while ((i < romSizeTable.length) && (romSizeTable[i][0] != sizeByte))
 			i++;
-		}
 
-		if (romSizeTable[i][0] == sizeByte) {
+		if (romSizeTable[i][0] == sizeByte)
 			return romSizeTable[i][1];
-		} else {
+		else
 			return -1;
-		}
 	}
 
 }
 
-class NoSaveDataException extends java.lang.Exception {
+class NoSaveDataException extends Exception {
 	public NoSaveDataException(String s) {
 		super(s);
 	}

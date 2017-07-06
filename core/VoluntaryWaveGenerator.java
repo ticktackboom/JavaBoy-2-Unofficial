@@ -51,11 +51,10 @@ class VoluntaryWaveGenerator {
 	}
 
 	public void setLength(int gbLength) {
-		if (gbLength == -1) {
+		if (gbLength == -1) 
 			totalLength = -1;
-		} else {
+		 else 
 			totalLength = (256 - gbLength) / 4;
-		}
 	}
 
 	public void setSamplePair(int address, int value) {

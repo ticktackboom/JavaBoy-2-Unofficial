@@ -69,9 +69,9 @@ class GameBoyPrinter extends GameLink {
 
 		dataSize = 640;
 
-		for (int r = 0; r < IMAGE_WIDTH * IMAGE_HEIGHT; r++) {
+		for (int r = 0; r < IMAGE_WIDTH * IMAGE_HEIGHT; r++)
 			imageData[r] = 0xFF000000;
-		}
+
 		source = new MemoryImageSource(IMAGE_WIDTH, IMAGE_HEIGHT,
 				new DirectColorModel(32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000), imageData, 0, IMAGE_WIDTH);
 		source.setAnimated(true);
@@ -97,19 +97,18 @@ class GameBoyPrinter extends GameLink {
 		cpu.triggerInterruptIfEnabled(cpu.INT_SER);
 
 		buffer[bufferFillPos++] = StaticFunctions.unsign(b);
-		if (bufferFillPos == BUFFER_SIZE) {
+		if (bufferFillPos == BUFFER_SIZE)
 			bufferFillPos = 0;
-		}
 
 		checkPackets();
 	}
 
 	int bytesAvailable() {
-		if (bufferFillPos > bufferEmptyPos) {
+		if (bufferFillPos > bufferEmptyPos)
 			return bufferFillPos - bufferEmptyPos;
-		} else {
+		else
 			return (BUFFER_SIZE - bufferEmptyPos) + bufferFillPos;
-		}
+
 	}
 
 	short getByte(int pos) {
@@ -123,11 +122,10 @@ class GameBoyPrinter extends GameLink {
 
 	void scrollImage() {
 		// Scroll the image up by 8 pixels. Really slow.
-		for (int y = 0; y < IMAGE_HEIGHT - 8; y++) {
-			for (int x = 0; x < IMAGE_WIDTH; x++) {
+		for (int y = 0; y < IMAGE_HEIGHT - 8; y++)
+			for (int x = 0; x < IMAGE_WIDTH; x++)
 				imageData[y * IMAGE_WIDTH + x] = imageData[(y + 8) * IMAGE_WIDTH + x];
-			}
-		}
+
 	}
 
 	void checkPackets() { // 0xBD 0xE6
@@ -139,9 +137,8 @@ class GameBoyPrinter extends GameLink {
 				case 1:
 				case 2:
 				case 15: { // These are headers we can ignore (I hope)
-					if (bytesAvailable() == 10) {
+					if (bytesAvailable() == 10)
 						consumeByte(10);
-					}
 					break;
 				}
 
@@ -200,9 +197,9 @@ class GameBoyPrinter extends GameLink {
 				consumeByte(16);
 				source.newPixels();
 				window.repaint();
-			} else if (dataSize == 0) {
+			} else if (dataSize == 0)
 				consumeByte(1);
-			}
+
 		}
 
 	}

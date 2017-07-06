@@ -49,7 +49,7 @@ class ModalDialog implements ActionListener {
 	public ModalDialog(Frame parent, String title, String text, DialogListener listener) {
 		this.yesNo = true;
 		this.listener = listener;
-		
+
 		if (parent == null)
 			System.out.println(text);
 
@@ -91,7 +91,6 @@ class ModalDialog implements ActionListener {
 				listener.yesPressed();
 			else
 				listener.noPressed();
-
 		}
 
 		dialog.setVisible(false);

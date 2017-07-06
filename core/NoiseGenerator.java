@@ -68,11 +68,11 @@ class NoiseGenerator {
 
 		randomValues = new boolean[32767];
 
-		Random rand = new java.util.Random();
+		Random rand = new Random();
 
-		for (int r = 0; r < 32767; r++) {
+		for (int r = 0; r < 32767; r++) 
 			randomValues[r] = rand.nextBoolean();
-		}
+		
 
 		cycleOffset = 0;
 	}
@@ -88,12 +88,11 @@ class NoiseGenerator {
 
 		randomValues = new boolean[32767];
 
-		Random rand = new java.util.Random();
+		Random rand = new Random();
 
-		for (int r = 0; r < 32767; r++) {
+		for (int r = 0; r < 32767; r++)
 			randomValues[r] = rand.nextBoolean();
-		}
-
+		
 		cycleOffset = 0;
 	}
 
@@ -116,11 +115,10 @@ class NoiseGenerator {
 
 	/** Set the length of the sound */
 	public void setLength(int gbLength) {
-		if (gbLength == -1) {
+		if (gbLength == -1) 
 			totalLength = -1;
-		} else {
+		 else 
 			totalLength = (64 - gbLength) / 4;
-		}
 	}
 
 	public void setParameters(float dividingRatio, boolean polynomialSteps, int shiftClockFreq) {
@@ -133,7 +131,7 @@ class NoiseGenerator {
 			this.polynomialSteps = 63;
 			cycleLength = 63 << 8;
 
-			java.util.Random rand = new java.util.Random();
+			Random rand = new Random();
 
 			cycleOffset = (int) (rand.nextFloat() * 1000);
 		}
@@ -143,8 +141,6 @@ class NoiseGenerator {
 			dividingRatio = 0.5f;
 
 		finalFreq = ((int) (4194304 / 8 / dividingRatio)) >> (shiftClockFreq + 1);
-		// System.out.println("dr:" + dividingRatio + " steps: " + this.polynomialSteps
-		// + " shift:" + shiftClockFreq + " = Freq:" + finalFreq);
 	}
 
 	/**
@@ -159,18 +155,17 @@ class NoiseGenerator {
 			counterEnvelope++;
 			if (numStepsEnvelope != 0) {
 				if (((counterEnvelope % numStepsEnvelope) == 0) && (amplitude > 0)) {
-					if (!increaseEnvelope) {
+					if (!increaseEnvelope) 
 						if (amplitude > 0)
 							amplitude -= 2;
-					} else {
+					 else 
 						if (amplitude < 16)
 							amplitude += 2;
-					}
+					
 				}
 			}
 
 			int step = ((finalFreq) / (sampleRate >> 8));
-			// System.out.println("Step=" + step);
 
 			for (int r = offset; r < offset + length; r++) {
 				boolean value = randomValues[((cycleOffset) + (cyclePos >> 8)) & 0x7FFF];

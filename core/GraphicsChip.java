@@ -17,16 +17,12 @@ abstract class GraphicsChip {
 	
 	/** Tile uses the background palette */
 	static final int TILE_BKG = 0;
-
 	/** Tile uses the first sprite palette */
 	static final int TILE_OBJ1 = 4;
-
 	/** Tile uses the second sprite palette */
 	static final int TILE_OBJ2 = 8;
-
 	/** Tile is flipped horizontally */
 	static final int TILE_FLIPX = 1;
-
 	/** Tile is flipped vertically */
 	static final int TILE_FLIPY = 2;
 
@@ -105,7 +101,6 @@ abstract class GraphicsChip {
 	}
 
 	/** Set the magnification for the screen */
-
 	public void setMagnify(int m) {
 		mag = m;
 		width = m * SCREEN_WIDTH;

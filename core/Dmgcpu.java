@@ -8,7 +8,7 @@ import java.awt.Component;
  * emulate the Z80-like processor found in the Gameboy, and code to provide the
  * locations in CPU address space that points to the correct area of ROM/RAM/IO.
  */
-class Dmgcpu {
+public class Dmgcpu {
 	/** Registers: 8-bit */
 	int a, b, c, d, e, f;
 	/** Registers: 16-bit */
@@ -120,9 +120,9 @@ class Dmgcpu {
 		// Sound not supported until Java 1.2
 		java1point3 = !((version.startsWith("1.0") || version.startsWith("1.1")));
 
-		if (java1point3) {
+		if (java1point3) 
 			soundChip = new SoundChip();
-		}
+		
 		ioHandler = new IoHandler(this);
 		applet = a;
 		// reset();
@@ -148,12 +148,6 @@ class Dmgcpu {
 	 * correct parts of the memory
 	 */
 	public final short addressRead(int addr) {
-
-		/*
-		 * if ((addr >= 0xDFD8) && (addr <= 0xDFF0) && (running)) {
-		 * System.out.println(StaticFunctions.hexWord(addr) + " read at " +
-		 * StaticFunctions.hexWord(pc) + " bank " + cartridge.currentBank); }
-		 */
 
 		/*
 		 * if ((addr < 0) || (addr > 65535)) {
@@ -190,7 +184,6 @@ class Dmgcpu {
 
 		case 0xE000:
 			return mainRam[addr - 0xE000];
-		/* (short) (mainRam[addr - 0xE000] & 0x00FF); */
 
 		case 0xF000:
 			if (addr < 0xFE00) {

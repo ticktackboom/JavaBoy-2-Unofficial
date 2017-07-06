@@ -98,10 +98,9 @@ import java.util.StringTokenizer;
 
 public class JavaBoyNeo extends java.applet.Applet
 		implements Runnable, KeyListener, WindowListener, MouseListener, ActionListener, ItemListener {
-	private final String WEBSITE_URL = "http://www.millstone.demon.co.uk/download/javaboy";
 
 	/** The version string is displayed on the title bar of the application */
-	private static String versionString = "0.92";
+	private static String versionString = "0.93";
 
 	private boolean appletRunning = true;
 	private Image backBuffer;
@@ -135,10 +134,10 @@ public class JavaBoyNeo extends java.applet.Applet
 					0xFF80FFFF, 0xFF00C0C0, 0xFF008080, 0xFF004000 } };
 
 	/** When emulation running, references the currently loaded cartridge */
-	Cartucho cartridge;
+	Cartucho cartucho;
 
 	/** When emulation running, references the current CPU object */
-	Dmgcpu dmgcpu;
+	Dmgcpu cpu;
 
 	/**
 	 * When emulation running, references the current graphics chip implementation
@@ -149,7 +148,7 @@ public class JavaBoyNeo extends java.applet.Applet
 	 * When connected to another computer or to a Game Boy printer, references the
 	 * current Game link object
 	 */
-	GameLink gameLink;
+	GameLink cableLink;
 
 	/**
 	 * Stores the byte which was overwritten at the breakpoint address by the
@@ -215,33 +214,60 @@ public class JavaBoyNeo extends java.applet.Applet
 
 	long lastClickTime = 0;
 
+	public JavaBoyNeo() {
+	}
+
+	/** Initialize JavaBoy when run as an application */
+	public JavaBoyNeo(String cartName) {
+		mainWindow = new GameBoyScreen("JavaBoy " + versionString, this);
+		mainWindow.setVisible(true);
+		this.requestFocus();
+		mainWindow.addWindowListener(this);
+	}
+
+	public static void main(String[] args) {
+		System.out.println("JavaBoy (tm) Version " + versionString + " (c) 2005 Neil Millstone (application)");
+		JavaBoyNeo javaBoy = new JavaBoyNeo("");
+	
+		if (args.length > 0) {
+			if (args[0].equals("server"))
+				javaBoy.cableLink = new TCPGameLink(null);
+			else if (args[0].equals("client"))
+				javaBoy.cableLink = new TCPGameLink(null, args[1]);
+		}
+	
+		Thread p = new Thread(javaBoy);
+		p.start();
+	}
+
 	/** When running as an applet, updates the screen when necessary */
 	public void paint(Graphics g) {
-		if (dmgcpu != null) {
+		if (cpu != null) {
 			int stripLength = 0;
 
 			// Centre the GB image
-			int x = getSize().width / 2 - dmgcpu.graphicsChip.getWidth() / 2;
-			int y = getSize().height / 2 - dmgcpu.graphicsChip.getHeight() / 2;
+			int x = getSize().width / 2 - cpu.graphicsChip.getWidth() / 2;
+			int y = getSize().height / 2 - cpu.graphicsChip.getHeight() / 2;
 
 			if ((stripTimer > stripLength) && (!fullFrame) && (!imageSizeChanged)) {
-				dmgcpu.graphicsChip.draw(g, x, y, this);
+				cpu.graphicsChip.draw(g, x, y, this);
 			} else {
 				Graphics bufferGraphics = doubleBuffer.getGraphics();
 
-				if (dmgcpu.graphicsChip.isFrameReady()) {
+				if (cpu.graphicsChip.isFrameReady()) {
 					bufferGraphics.setColor(new Color(255, 255, 255));
 					bufferGraphics.fillRect(0, 0, getSize().width, getSize().height);
 
-					dmgcpu.graphicsChip.draw(bufferGraphics, x, y, this);
+					cpu.graphicsChip.draw(bufferGraphics, x, y, this);
 
 					int stripPos = getSize().height - 40;
-					if (stripTimer < 10) {
+					
+					if (stripTimer < 10) 
 						stripPos = getSize().height - (stripTimer * 4);
-					}
-					if (stripTimer >= stripLength - 10) {
+					
+					if (stripTimer >= stripLength - 10) 
 						stripPos = getSize().height - 40 + ((stripTimer - (stripLength - 10)) * 4);
-					}
+					
 
 					bufferGraphics.setColor(new Color(0, 0, 255));
 					bufferGraphics.fillRect(0, stripPos, getSize().width, 44);
@@ -258,7 +284,7 @@ public class JavaBoyNeo extends java.applet.Applet
 							bufferGraphics.drawString("/download/javaboy", 2, stripPos + 36);
 						} else {
 							bufferGraphics.setColor(new Color(255, 255, 255));
-							bufferGraphics.drawString("ROM: " + cartridge.getCartName(), 2, stripPos + 12);
+							bufferGraphics.drawString("ROM: " + cartucho.getCartName(), 2, stripPos + 12);
 							bufferGraphics.drawString("Double click for options", 2, stripPos + 24);
 							bufferGraphics.drawString("Emulator version: " + versionString, 2, stripPos + 36);
 						}
@@ -266,9 +292,9 @@ public class JavaBoyNeo extends java.applet.Applet
 
 					stripTimer++;
 					g.drawImage(doubleBuffer, 0, 0, this);
-				} else {
-					dmgcpu.graphicsChip.draw(bufferGraphics, x, y, this);
-				}
+				} else 
+					cpu.graphicsChip.draw(bufferGraphics, x, y, this);
+				
 
 			}
 
@@ -292,9 +318,9 @@ public class JavaBoyNeo extends java.applet.Applet
 	public void mouseClicked(MouseEvent e) {
 		long doubleClickTime = (System.currentTimeMillis() - lastClickTime);
 
-		if (doubleClickTime <= 250) {
+		if (doubleClickTime <= 250) 
 			popupMenu.show(e.getComponent(), e.getX(), e.getY());
-		}
+		
 		// System.out.println("Click! " + );
 		lastClickTime = System.currentTimeMillis();
 	}
@@ -322,29 +348,29 @@ public class JavaBoyNeo extends java.applet.Applet
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand());
 		if (e.getActionCommand().equals("Size: 1x")) {
-			dmgcpu.graphicsChip.setMagnify(1);
+			cpu.graphicsChip.setMagnify(1);
 			imageSizeChanged = true;
 		} else if (e.getActionCommand().equals("Size: 2x")) {
-			dmgcpu.graphicsChip.setMagnify(2);
+			cpu.graphicsChip.setMagnify(2);
 			imageSizeChanged = true;
 		} else if (e.getActionCommand().equals("Size: 3x")) {
-			dmgcpu.graphicsChip.setMagnify(3);
+			cpu.graphicsChip.setMagnify(3);
 			imageSizeChanged = true;
 		} else if (e.getActionCommand().equals("Size: 4x")) {
-			dmgcpu.graphicsChip.setMagnify(4);
+			cpu.graphicsChip.setMagnify(4);
 			imageSizeChanged = true;
 		} else if (e.getActionCommand().equals("Define Controls")) {
 			new DefineControls();
 		} else if (e.getActionCommand().equals("FrameSkip: 0")) {
-			dmgcpu.graphicsChip.frameSkip = 1;
+			cpu.graphicsChip.frameSkip = 1;
 		} else if (e.getActionCommand().equals("FrameSkip: 1")) {
-			dmgcpu.graphicsChip.frameSkip = 2;
+			cpu.graphicsChip.frameSkip = 2;
 		} else if (e.getActionCommand().equals("FrameSkip: 2")) {
-			dmgcpu.graphicsChip.frameSkip = 3;
+			cpu.graphicsChip.frameSkip = 3;
 		} else if (e.getActionCommand().equals("FrameSkip: 3")) {
-			dmgcpu.graphicsChip.frameSkip = 4;
+			cpu.graphicsChip.frameSkip = 4;
 		} else if (e.getActionCommand().equals("Reset")) {
-			dmgcpu.reset();
+			cpu.reset();
 		}
 	}
 
@@ -355,11 +381,11 @@ public class JavaBoyNeo extends java.applet.Applet
 
 	public void setSoundEnable(boolean on) {
 		soundCheck.setState(on);
-		if (dmgcpu.soundChip != null) {
-			dmgcpu.soundChip.channel1Enable = on;
-			dmgcpu.soundChip.channel2Enable = on;
-			dmgcpu.soundChip.channel3Enable = on;
-			dmgcpu.soundChip.channel4Enable = on;
+		if (cpu.soundChip != null) {
+			cpu.soundChip.channel1Enable = on;
+			cpu.soundChip.channel2Enable = on;
+			cpu.soundChip.channel3Enable = on;
+			cpu.soundChip.channel4Enable = on;
 		}
 	}
 
@@ -394,59 +420,44 @@ public class JavaBoyNeo extends java.applet.Applet
 		int key = e.getKeyCode();
 
 		if (key == keyCodes[0]) {
-			// if (!dmgcpu.ioHandler.padUp) {
-			dmgcpu.ioHandler.padUp = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-			// }
+			cpu.ioHandler.padUp = true;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		} else if (key == keyCodes[1]) {
-			// if (!dmgcpu.ioHandler.padDown) {
-			dmgcpu.ioHandler.padDown = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-			// }
+			cpu.ioHandler.padDown = true;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		} else if (key == keyCodes[2]) {
-			// if (!dmgcpu.ioHandler.padLeft) {
-			dmgcpu.ioHandler.padLeft = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-			// }
+			cpu.ioHandler.padLeft = true;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		} else if (key == keyCodes[3]) {
-			// if (!dmgcpu.ioHandler.padRight) {
-			dmgcpu.ioHandler.padRight = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-			// }
+			cpu.ioHandler.padRight = true;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		} else if (key == keyCodes[4]) {
-			// if (!dmgcpu.ioHandler.padA) {
-			dmgcpu.ioHandler.padA = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-			// }
+			cpu.ioHandler.padA = true;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		} else if (key == keyCodes[5]) {
-			// if (!dmgcpu.ioHandler.padB) {
-			dmgcpu.ioHandler.padB = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-			// }
+			cpu.ioHandler.padB = true;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		} else if (key == keyCodes[6]) {
-			// if (!dmgcpu.ioHandler.padStart) {
-			dmgcpu.ioHandler.padStart = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-			// }
+			cpu.ioHandler.padStart = true;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		} else if (key == keyCodes[7]) {
-			// if (!dmgcpu.ioHandler.padSelect) {
-			dmgcpu.ioHandler.padSelect = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-			// }
+			cpu.ioHandler.padSelect = true;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		}
+		
 		switch (key) {
 		case KeyEvent.VK_F1:
-			if (dmgcpu.graphicsChip.frameSkip != 1)
-				dmgcpu.graphicsChip.frameSkip--;
-			System.out.println("Frameskip now " + dmgcpu.graphicsChip.frameSkip);
+			if (cpu.graphicsChip.frameSkip != 1)
+				cpu.graphicsChip.frameSkip--;
+			System.out.println("Frameskip now " + cpu.graphicsChip.frameSkip);
 			break;
 		case KeyEvent.VK_F2:
-			if (dmgcpu.graphicsChip.frameSkip != 10)
-				dmgcpu.graphicsChip.frameSkip++;
-			System.out.println("Frameskip now " + dmgcpu.graphicsChip.frameSkip);
+			if (cpu.graphicsChip.frameSkip != 10)
+				cpu.graphicsChip.frameSkip++;
+			System.out.println("Frameskip now " + cpu.graphicsChip.frameSkip);
 			break;
 		case KeyEvent.VK_F5:
-			dmgcpu.terminateProcess();
+			cpu.terminateProcess();
 			activateDebugger();
 			System.out.println("- Break into debugger");
 			break;
@@ -457,34 +468,33 @@ public class JavaBoyNeo extends java.applet.Applet
 		int key = e.getKeyCode();
 
 		if (key == keyCodes[0]) {
-			dmgcpu.ioHandler.padUp = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
+			cpu.ioHandler.padUp = false;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		} else if (key == keyCodes[1]) {
-			dmgcpu.ioHandler.padDown = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
+			cpu.ioHandler.padDown = false;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		} else if (key == keyCodes[2]) {
-			dmgcpu.ioHandler.padLeft = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
+			cpu.ioHandler.padLeft = false;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		} else if (key == keyCodes[3]) {
-			dmgcpu.ioHandler.padRight = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
+			cpu.ioHandler.padRight = false;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		} else if (key == keyCodes[4]) {
-			dmgcpu.ioHandler.padA = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
+			cpu.ioHandler.padA = false;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		} else if (key == keyCodes[5]) {
-			dmgcpu.ioHandler.padB = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
+			cpu.ioHandler.padB = false;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		} else if (key == keyCodes[6]) {
-			dmgcpu.ioHandler.padStart = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
+			cpu.ioHandler.padStart = false;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		} else if (key == keyCodes[7]) {
-			dmgcpu.ioHandler.padSelect = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
+			cpu.ioHandler.padSelect = false;
+			cpu.triggerInterruptIfEnabled(cpu.INT_P10);
 		}
 	}
 
 	public void loadMemorySearch() {
-
 		memorySearchMap.clear();
 
 		for (int i = 0; i < readWriteMemoryMap.length; i++) {
@@ -494,10 +504,10 @@ public class JavaBoyNeo extends java.applet.Applet
 
 			if (is16BitSearch) {
 				for (int j = start; j <= end; j += 2)
-					memorySearchMap.put(j, (short) ((dmgcpu.addressRead(j + 1) << 8) + dmgcpu.addressRead(j)));
+					memorySearchMap.put(j, (short) ((cpu.addressRead(j + 1) << 8) + cpu.addressRead(j)));
 			} else {
 				for (int j = start; j <= end; j++)
-					memorySearchMap.put(j, dmgcpu.addressRead(j));
+					memorySearchMap.put(j, cpu.addressRead(j));
 			}
 
 		}
@@ -512,8 +522,8 @@ public class JavaBoyNeo extends java.applet.Applet
 			int key = (Integer) entry.getKey();
 			short value = (Short) entry.getValue();
 
-			short currentValue = is16BitSearch ? (short) ((dmgcpu.addressRead(key + 1) << 8) + dmgcpu.addressRead(key))
-					: dmgcpu.addressRead(key);
+			short currentValue = is16BitSearch ? (short) ((cpu.addressRead(key + 1) << 8) + cpu.addressRead(key))
+					: cpu.addressRead(key);
 
 			if (condition.equals("c")) { // changed
 				if (value == currentValue)
@@ -554,10 +564,10 @@ public class JavaBoyNeo extends java.applet.Applet
 			int key = (Integer) entry.getKey();
 			if (is16BitSearch)
 				System.out.println(StaticFunctions.hexWord(key) + "    " + StaticFunctions
-						.hexWord((short) ((dmgcpu.addressRead(key + 1) << 8) + dmgcpu.addressRead(key))));
+						.hexWord((short) ((cpu.addressRead(key + 1) << 8) + cpu.addressRead(key))));
 			else {
 				System.out.println(StaticFunctions.hexWord(key) + "    "
-						+ StaticFunctions.hexByte(StaticFunctions.unsign(dmgcpu.addressRead(key))));
+						+ StaticFunctions.hexByte(StaticFunctions.unsign(cpu.addressRead(key))));
 			}
 		}
 	}
@@ -576,11 +586,11 @@ public class JavaBoyNeo extends java.applet.Applet
 		for (int l = 0; l < lines; l++) {
 			System.out.print(StaticFunctions.hexWord(start + (l * 16)) + "   ");
 			for (int r = start + (l * 16); r < start + (l * 16) + 16; r++) {
-				System.out.print(StaticFunctions.hexByte(StaticFunctions.unsign(dmgcpu.addressRead(r))) + " ");
+				System.out.print(StaticFunctions.hexByte(StaticFunctions.unsign(cpu.addressRead(r))) + " ");
 			}
 			System.out.print("   ");
 			for (int r = start + (l * 16); r < start + (l * 16) + 16; r++) {
-				char c = (char) dmgcpu.addressRead(r);
+				char c = (char) cpu.addressRead(r);
 				if ((c >= 32) && (c <= 128)) {
 					System.out.print(c);
 				} else {
@@ -594,13 +604,13 @@ public class JavaBoyNeo extends java.applet.Applet
 	/** Output the current register values to the console */
 	public void showRegisterValues() {
 		System.out.println("- Register values");
-		System.out.print("A = " + StaticFunctions.hexWord(dmgcpu.a) + "    BC = " + StaticFunctions.hexWord(dmgcpu.b)
-				+ StaticFunctions.hexWord(dmgcpu.c));
-		System.out.print("    DE = " + StaticFunctions.hexByte(dmgcpu.d) + StaticFunctions.hexByte(dmgcpu.e));
-		System.out.print("    HL = " + StaticFunctions.hexWord(dmgcpu.hl));
-		System.out.print("    PC = " + StaticFunctions.hexWord(dmgcpu.pc));
-		System.out.println("    SP = " + StaticFunctions.hexWord(dmgcpu.sp));
-		System.out.println("F = " + StaticFunctions.hexByte(StaticFunctions.unsign((short) dmgcpu.f)));
+		System.out.print("A = " + StaticFunctions.hexWord(cpu.a) + "    BC = " + StaticFunctions.hexWord(cpu.b)
+				+ StaticFunctions.hexWord(cpu.c));
+		System.out.print("    DE = " + StaticFunctions.hexByte(cpu.d) + StaticFunctions.hexByte(cpu.e));
+		System.out.print("    HL = " + StaticFunctions.hexWord(cpu.hl));
+		System.out.print("    PC = " + StaticFunctions.hexWord(cpu.pc));
+		System.out.println("    SP = " + StaticFunctions.hexWord(cpu.sp));
+		System.out.println("F = " + StaticFunctions.hexByte(StaticFunctions.unsign((short) cpu.f)));
 	}
 
 	/**
@@ -610,8 +620,8 @@ public class JavaBoyNeo extends java.applet.Applet
 	public void getDebuggerMenuChoice() {
 		String command = new String("");
 		char b = 0;
-		if (dmgcpu != null)
-			dmgcpu.terminate = false;
+		if (cpu != null)
+			cpu.terminate = false;
 
 		if (!debuggerActive) {
 			if (debuggerPending) {
@@ -646,7 +656,7 @@ public class JavaBoyNeo extends java.applet.Applet
 			in = new BufferedReader(new InputStreamReader(is));
 
 			String line;
-			while (((line = in.readLine()) != null) && (!dmgcpu.terminate) && (appletRunning)) {
+			while (((line = in.readLine()) != null) && (!cpu.terminate) && (appletRunning)) {
 				executeDebuggerCommand(line);
 			}
 
@@ -755,7 +765,7 @@ public class JavaBoyNeo extends java.applet.Applet
 					int length = Integer.valueOf(st.nextToken(), 16).intValue();
 					System.out.println("- Dissasembling " + StaticFunctions.hexWord(length)
 							+ " instructions starting from " + StaticFunctions.hexWord(address));
-					dmgcpu.disassemble(address, length);
+					cpu.disassemble(address, length);
 				} catch (java.util.NoSuchElementException e) {
 					System.out.println("Invalid number of parameters to 'i' command.");
 				} catch (NumberFormatException e) {
@@ -766,9 +776,9 @@ public class JavaBoyNeo extends java.applet.Applet
 				try {
 					int length = Integer.valueOf(st.nextToken(), 16).intValue();
 					System.out.println("- Dissasembling " + StaticFunctions.hexWord(length)
-							+ " instructions starting from program counter (" + StaticFunctions.hexWord(dmgcpu.pc)
+							+ " instructions starting from program counter (" + StaticFunctions.hexWord(cpu.pc)
 							+ ")");
-					dmgcpu.disassemble(dmgcpu.pc, length);
+					cpu.disassemble(cpu.pc, length);
 				} catch (java.util.NoSuchElementException e) {
 					System.out.println("Invalid number of parameters to 'p' command.");
 				} catch (NumberFormatException e) {
@@ -778,7 +788,7 @@ public class JavaBoyNeo extends java.applet.Applet
 			case 'k':
 				try {
 					String keyName = st.nextToken();
-					dmgcpu.ioHandler.toggleKey(keyName);
+					cpu.ioHandler.toggleKey(keyName);
 				} catch (java.util.NoSuchElementException e) {
 					System.out.println("Invalid number of parameters to 'k' command.");
 				}
@@ -788,7 +798,7 @@ public class JavaBoyNeo extends java.applet.Applet
 					String reg = st.nextToken();
 					try {
 						int val = Integer.valueOf(st.nextToken(), 16).intValue();
-						if (dmgcpu.setRegister(reg, val)) {
+						if (cpu.setRegister(reg, val)) {
 							System.out.println("- Set register " + reg + " to " + StaticFunctions.hexWord(val) + ".");
 						} else {
 							System.out.println("Invalid register name '" + reg + "'.");
@@ -804,7 +814,7 @@ public class JavaBoyNeo extends java.applet.Applet
 				break;
 			case 's':
 				System.out.println("- CPU Reset");
-				dmgcpu.reset();
+				cpu.reset();
 				break;
 			case 'o':
 				repaint();
@@ -822,7 +832,7 @@ public class JavaBoyNeo extends java.applet.Applet
 				}
 				break;
 			case 'q':
-				cartridge.restoreMapping();
+				cartucho.restoreMapping();
 				System.out.println("- Quitting debugger");
 				deactivateDebugger();
 				break;
@@ -846,7 +856,7 @@ public class JavaBoyNeo extends java.applet.Applet
 				try {
 					while (st.hasMoreTokens()) {
 						short data = (byte) Integer.valueOf(st.nextToken(), 16).intValue();
-						dmgcpu.addressWrite(address++, data);
+						cpu.addressWrite(address++, data);
 						// System.out.print(JavaBoy.hexByte(unsign(data)));
 						// if (st.hasMoreTokens()) System.out.print(", ");
 					}
@@ -859,21 +869,21 @@ public class JavaBoyNeo extends java.applet.Applet
 			case 'b':
 				try {
 					if (breakpointAddr != -1) {
-						cartridge.saveMapping();
-						cartridge.mapRom(breakpointBank);
-						dmgcpu.addressWrite(breakpointAddr, breakpointInstr);
-						cartridge.restoreMapping();
+						cartucho.saveMapping();
+						cartucho.mapRom(breakpointBank);
+						cpu.addressWrite(breakpointAddr, breakpointInstr);
+						cartucho.restoreMapping();
 						breakpointAddr = -1;
 						System.out.println("- Clearing original breakpoint");
-						dmgcpu.setBreakpoint(false);
+						cpu.setBreakpoint(false);
 					}
 					int addr = Integer.valueOf(st.nextToken(), 16).intValue();
 					System.out.println("- Setting breakpoint at " + StaticFunctions.hexWord(addr));
 					breakpointAddr = (short) addr;
-					breakpointInstr = (short) dmgcpu.addressRead(addr);
-					breakpointBank = (short) cartridge.currentBank;
-					dmgcpu.addressWrite(addr, 0x52);
-					dmgcpu.setBreakpoint(true);
+					breakpointInstr = (short) cpu.addressRead(addr);
+					breakpointBank = (short) cartucho.currentBank;
+					cpu.addressWrite(addr, 0x52);
+					cpu.setBreakpoint(true);
 				} catch (java.util.NoSuchElementException e) {
 					System.out.println("Invalid number of parameters to 'b' command.");
 				} catch (NumberFormatException e) {
@@ -882,16 +892,16 @@ public class JavaBoyNeo extends java.applet.Applet
 				break;
 			case 'g':
 				setupKeyboard();
-				cartridge.restoreMapping();
-				dmgcpu.execute(-1);
+				cartucho.restoreMapping();
+				cpu.execute(-1);
 				break;
 			case 'n':
 				try {
 					int state = Integer.valueOf(st.nextToken(), 16).intValue();
 					if (state == 1) {
-						dmgcpu.interruptsEnabled = true;
+						cpu.interruptsEnabled = true;
 					} else {
-						dmgcpu.interruptsEnabled = false;
+						cpu.interruptsEnabled = false;
 					}
 				} catch (java.util.NoSuchElementException e) {
 					// Nothing!
@@ -899,7 +909,7 @@ public class JavaBoyNeo extends java.applet.Applet
 					System.out.println("Error parsing hex value.");
 				}
 				System.out.print("- Interrupts are ");
-				if (dmgcpu.interruptsEnabled)
+				if (cpu.interruptsEnabled)
 					System.out.println("enabled.");
 				else
 					System.out.println("disabled.");
@@ -909,30 +919,30 @@ public class JavaBoyNeo extends java.applet.Applet
 				try {
 					int bank = Integer.valueOf(st.nextToken(), 16).intValue();
 					System.out.println("- Mapping ROM bank " + StaticFunctions.hexByte(bank) + " to 4000 - 7FFFF");
-					cartridge.saveMapping();
-					cartridge.mapRom(bank);
+					cartucho.saveMapping();
+					cartucho.mapRom(bank);
 				} catch (java.util.NoSuchElementException e) {
 					System.out.println("- ROM Mapper state:");
-					System.out.println(cartridge.getMapInfo());
+					System.out.println(cartucho.getMapInfo());
 				}
 				break;
 			case 't':
 				try {
-					cartridge.restoreMapping();
+					cartucho.restoreMapping();
 					int length = Integer.valueOf(st.nextToken(), 16).intValue();
 					System.out.println("- Executing " + StaticFunctions.hexWord(length)
-							+ " instructions starting from program counter (" + StaticFunctions.hexWord(dmgcpu.pc)
+							+ " instructions starting from program counter (" + StaticFunctions.hexWord(cpu.pc)
 							+ ")");
-					dmgcpu.execute(length);
-					if (dmgcpu.pc == breakpointAddr) {
-						dmgcpu.addressWrite(breakpointAddr, breakpointInstr);
+					cpu.execute(length);
+					if (cpu.pc == breakpointAddr) {
+						cpu.addressWrite(breakpointAddr, breakpointInstr);
 						breakpointAddr = -1;
 						System.out.println("- Breakpoint instruction restored");
 					}
 				} catch (java.util.NoSuchElementException e) {
 					System.out.println(
-							"- Executing instruction at program counter (" + StaticFunctions.hexWord(dmgcpu.pc) + ")");
-					dmgcpu.execute(1);
+							"- Executing instruction at program counter (" + StaticFunctions.hexWord(cpu.pc) + ")");
+					cpu.execute(1);
 				} catch (NumberFormatException e) {
 					System.out.println("Error parsing hex value.");
 				}
@@ -969,32 +979,6 @@ public class JavaBoyNeo extends java.applet.Applet
 	public void windowDeactivated(WindowEvent e) {
 	}
 
-	public JavaBoyNeo() {
-	}
-
-	/** Initialize JavaBoy when run as an application */
-	public JavaBoyNeo(String cartName) {
-		mainWindow = new GameBoyScreen("JavaBoy " + versionString, this);
-		mainWindow.setVisible(true);
-		this.requestFocus();
-		mainWindow.addWindowListener(this);
-	}
-
-	public static void main(String[] args) {
-		System.out.println("JavaBoy (tm) Version " + versionString + " (c) 2005 Neil Millstone (application)");
-		JavaBoyNeo javaBoy = new JavaBoyNeo("");
-
-		if (args.length > 0) {
-			if (args[0].equals("server"))
-				javaBoy.gameLink = new TCPGameLink(null);
-			else if (args[0].equals("client"))
-				javaBoy.gameLink = new TCPGameLink(null, args[1]);
-		}
-
-		Thread p = new Thread(javaBoy);
-		p.start();
-	}
-
 	public void run() {
 		do {
 			// repaint();
@@ -1013,10 +997,10 @@ public class JavaBoyNeo extends java.applet.Applet
 
 	/** Free up allocated memory */
 	public void dispose() {
-		if (cartridge != null)
-			cartridge.dispose();
-		if (dmgcpu != null)
-			dmgcpu.dispose();
+		if (cartucho != null)
+			cartucho.dispose();
+		if (cpu != null)
+			cpu.dispose();
 	}
 
 	@Override
@@ -1029,8 +1013,8 @@ public class JavaBoyNeo extends java.applet.Applet
 	public void stop() {
 		System.out.println("Applet stopped");
 		appletRunning = false;
-		if (dmgcpu != null)
-			dmgcpu.terminate = true;
+		if (cpu != null)
+			cpu.terminate = true;
 	}
 
 }

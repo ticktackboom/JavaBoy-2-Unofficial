@@ -117,16 +117,16 @@ class SquareWaveGenerator {
 		try {
 			float frequency = 131072 / 2048;
 
-			if (gbFrequency != 2048) {
+			if (gbFrequency != 2048) 
 				frequency = ((float) 131072 / (float) (2048 - gbFrequency));
-			}
+			
 			// System.out.println("gbFrequency: " + gbFrequency + "");
 			this.gbFrequency = gbFrequency;
-			if (frequency != 0) {
+			if (frequency != 0) 
 				cycleLength = (256 * sampleRate) / (int) frequency;
-			} else {
+			 else 
 				cycleLength = 65535;
-			}
+			
 			if (cycleLength == 0)
 				cycleLength = 1;
 			// System.out.println("Cycle length : " + cycleLength + " samples");
@@ -158,19 +158,18 @@ class SquareWaveGenerator {
 	}
 
 	public void setLength(int gbLength) {
-		if (gbLength == -1) {
+		if (gbLength == -1) 
 			totalLength = -1;
-		} else {
+		 else 
 			totalLength = (64 - gbLength) / 4;
-		}
+		
 	}
 
 	public void setLength3(int gbLength) {
-		if (gbLength == -1) {
+		if (gbLength == -1) 
 			totalLength = -1;
-		} else {
+		 else 
 			totalLength = (256 - gbLength) / 4;
-		}
 	}
 
 	public void setVolume3(int volume) {
@@ -204,11 +203,11 @@ class SquareWaveGenerator {
 			if (timeSweep != 0) {
 				counterSweep++;
 				if (counterSweep > timeSweep) {
-					if (decreaseSweep) {
+					if (decreaseSweep) 
 						setFrequency(gbFrequency - (gbFrequency >> numSweep));
-					} else {
+					 else 
 						setFrequency(gbFrequency + (gbFrequency >> numSweep));
-					}
+					
 					counterSweep = 0;
 				}
 			}
@@ -228,11 +227,11 @@ class SquareWaveGenerator {
 			for (int r = offset; r < offset + length; r++) {
 
 				if (cycleLength != 0) {
-					if (((8 * cyclePos) / cycleLength) >= dutyCycle) {
+					if (((8 * cyclePos) / cycleLength) >= dutyCycle) 
 						val = amplitude;
-					} else {
+					 else 
 						val = -amplitude;
-					}
+					
 				}
 
 				/*

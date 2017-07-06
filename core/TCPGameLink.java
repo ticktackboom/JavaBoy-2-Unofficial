@@ -121,9 +121,9 @@ class TCPGameLink extends GameLink implements Runnable {
 				int data = 0, clock, initial, b1, b2, b3, b4, v = 0;
 				while ((data != -1) && (!terminate)) { /* This needs to terminate */
 
-					if (dmgcpu != null) {
+					if (dmgcpu != null) 
 						v = dmgcpu.instrCount;
-					}
+					
 
 					initial = inStream.read();
 
@@ -132,8 +132,6 @@ class TCPGameLink extends GameLink implements Runnable {
 					b3 = inStream.read();
 					b4 = inStream.read();
 
-					// System.out.println(b1+" "+b2+" "+b3+" "+b4);
-
 					clock = b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
 
 					data = inStream.read();
@@ -141,10 +139,7 @@ class TCPGameLink extends GameLink implements Runnable {
 
 					// System.out.println(v + " " + dmgcpu.instrCount);
 					if (dmgcpu != null) {
-						while ( /*
-								 * (v + 600 > dmgcpu.instrCount) || /*((clock != -1) && (clock >
-								 * dmgcpu.instrCount)) ||
-								 */ (!dmgcpu.interruptsEnabled)
+						while ((!dmgcpu.interruptsEnabled)
 								|| ((dmgcpu.ioHandler.registers[0x0F] & dmgcpu.INT_SER) != 0) && (!terminate)) {
 							try {
 								java.lang.Thread.sleep(5);

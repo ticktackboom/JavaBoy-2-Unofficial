@@ -40,24 +40,18 @@ class GameboyPalette {
 
 	/** Get the palette from the internal Gameboy Color format */
 	public byte getGbcColours(int entryNo, boolean high) {
-		if (high) {
+		if (high)
 			return (byte) (gbcData[entryNo] >> 8);
-
-		} else {
+		else
 			return (byte) (gbcData[entryNo] & 0x00FF);
-
-		}
 	}
 
 	/** Set the palette from the internal Gameboy Color format */
 	public void setGbcColours(int entryNo, boolean high, int dat) {
-		if (high) {
+		if (high)
 			gbcData[entryNo] = (gbcData[entryNo] & 0x00FF) | (dat << 8);
-
-		} else {
+		else
 			gbcData[entryNo] = (gbcData[entryNo] & 0xFF00) | dat;
-
-		}
 
 		int red = (gbcData[entryNo] & 0x001F) << 3;
 		int green = (gbcData[entryNo] & 0x03E0) >> 2;

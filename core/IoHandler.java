@@ -28,9 +28,9 @@ class IoHandler {
 	/** Initialize IO to initial power on state */
 	public void reset() {
 		System.out.println("Hardware reset");
-		for (int r = 0; r < 0xFF; r++) {
+		for (int r = 0; r < 0xFF; r++) 
 			ioWrite(r, (short) 0x00);
-		}
+		
 		ioWrite(0x40, (short) 0x91);
 		ioWrite(0x0F, (short) 0x01);
 		hdmaRunning = false;
@@ -69,7 +69,8 @@ class IoHandler {
 	}
 
 	public void performHdma() {
-		int dmaSrc = (StaticFunctions.unsign(registers[0x51]) << 8) + (StaticFunctions.unsign(registers[0x52]) & 0xF0);
+		int dmaSrc = (StaticFunctions.unsign(registers[0x51]) << 8)
+				+ (StaticFunctions.unsign(registers[0x52]) & 0xF0);
 		int dmaDst = ((StaticFunctions.unsign(registers[0x53]) & 0x1F) << 8)
 				+ (StaticFunctions.unsign(registers[0x54]) & 0xF0) + 0x8000;
 
@@ -100,11 +101,6 @@ class IoHandler {
 
 	/** Read data from IO Ram */
 	public short ioRead(int num) {
-		if (num <= 0x4B) {
-			// System.out.println("Read of register " + JavaBoy.hexByte(num) + " at " +
-			// JavaBoy.hexWord(dmgcpu.pc));
-		}
-
 		switch (num) {
 		// Read Handlers go here
 		// case 0x00 :

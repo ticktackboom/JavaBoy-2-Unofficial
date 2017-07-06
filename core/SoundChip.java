@@ -3,6 +3,7 @@ package core;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.DataLine.Info;
 import javax.sound.sampled.SourceDataLine;
 
 /**
@@ -10,13 +11,21 @@ import javax.sound.sampled.SourceDataLine;
  * Java Sound API, and handles the calsses for each sound channel.
  */
 class SoundChip {
-	/** The DataLine for outputting the sound */
+	/*
+	 * SourceDataLine es un objeto Java que permite escribir bytes de audio.
+	 */
 	SourceDataLine soundLine;
 
+	/*
+	 * El sonido en Gameboy consiste en 4 canales de audio. Los dos primeros son
+	 * canales cuadráticos. El tercero es un canal programable. El cuarto canal es
+	 * un canal de ruido
+	 */
 	SquareWaveGenerator channel1;
 	SquareWaveGenerator channel2;
 	VoluntaryWaveGenerator channel3;
 	NoiseGenerator channel4;
+
 	boolean soundEnabled = false;
 
 	/** If true, channel is enabled */
@@ -43,7 +52,7 @@ class SoundChip {
 		try {
 			AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sampleRate, 8, 2, 2, sampleRate,
 					true);
-			DataLine.Info lineInfo = new DataLine.Info(SourceDataLine.class, format);
+			Info lineInfo = new DataLine.Info(SourceDataLine.class, format);
 
 			if (!AudioSystem.isLineSupported(lineInfo)) {
 				System.out.println("Error: Can't find audio output system!");
@@ -54,7 +63,6 @@ class SoundChip {
 				int bufferLength = (sampleRate / 1000) * bufferLengthMsec;
 				line.open(format, bufferLength);
 				line.start();
-				// System.out.println("Initialized audio successfully.");
 				soundEnabled = true;
 				return line;
 			}
@@ -96,11 +104,10 @@ class SoundChip {
 		if (soundEnabled) {
 			int numSamples;
 
-			if (sampleRate / 28 >= soundLine.available() * 2) {
+			if (sampleRate / 28 >= soundLine.available() * 2)
 				numSamples = soundLine.available() * 2;
-			} else {
+			else
 				numSamples = (sampleRate / 28) & 0xFFFE;
-			}
 
 			byte[] b = new byte[numSamples];
 			if (channel1Enable)

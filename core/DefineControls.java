@@ -14,6 +14,10 @@ import java.awt.event.WindowListener;
 import java.util.Hashtable;
 
 public class DefineControls extends Frame implements KeyListener, WindowListener, ActionListener {
+	/**
+	 * Serial ID 
+	 */
+	private static final long serialVersionUID = 1459483557622330864L;
 
 	TextField[] controlsField = new TextField[8];
 
@@ -76,11 +80,10 @@ public class DefineControls extends Frame implements KeyListener, WindowListener
 	}
 
 	public String getKeyDesc(int code, char c) {
-		if (keyNames.containsKey(new Integer(code))) {
+		if (keyNames.containsKey(new Integer(code))) 
 			return (String) keyNames.get(new Integer(code));
-		} else {
+		 else 
 			return c + "";
-		}
 	}
 
 	public TextField addControlsLine(String name) {
